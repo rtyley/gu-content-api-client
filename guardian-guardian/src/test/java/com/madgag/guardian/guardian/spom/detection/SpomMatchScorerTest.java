@@ -1,4 +1,4 @@
-package com.madgag.spom.detection;
+package com.madgag.guardian.guardian.spom.detection;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThan;
@@ -15,7 +15,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.madgag.spom.util.LevenshteinWithDistanceThreshold;
+import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
+import com.madgag.guardian.guardian.spom.detection.SpomMatchScorer;
+import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpomMatchScorerTest {

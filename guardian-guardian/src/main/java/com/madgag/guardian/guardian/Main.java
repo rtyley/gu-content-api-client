@@ -1,5 +1,6 @@
 package com.madgag.guardian.guardian;
 
+import static com.google.common.collect.Lists.transform;
 import static com.google.common.collect.Sets.newHashSet;
 
 import java.io.IOException;
@@ -11,16 +12,14 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.madgag.guardian.contentapi.ApiRequestUrlGenerator;
 import com.madgag.guardian.contentapi.Hitter;
 import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
-import com.madgag.spom.detection.NormalisedArticle;
-import com.madgag.spom.detection.SpomIdentifier;
+import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
+import com.madgag.guardian.guardian.spom.detection.SpomIdentifier;
 
 public class Main {
 	public static void main(String[] args) throws IOException, JAXBException {
@@ -35,7 +34,7 @@ public class Main {
 	    
 	    SearchResponse response = hitter.jojo(searchRequest);
 	    
-	    List<NormalisedArticle> nas = Lists.transform(response.contents, new Function<Content,NormalisedArticle>() {
+	    List<NormalisedArticle> nas = transform(response.contents, new Function<Content,NormalisedArticle>() {
 			public NormalisedArticle apply(Content c) {
 				String body = c.getField("body");
 				System.out.println(body);

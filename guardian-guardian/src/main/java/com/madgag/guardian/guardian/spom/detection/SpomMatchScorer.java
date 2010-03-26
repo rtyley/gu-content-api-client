@@ -1,4 +1,4 @@
-package com.madgag.spom.detection;
+package com.madgag.guardian.guardian.spom.detection;
 
 import static java.lang.Math.round;
 
@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import com.madgag.spom.util.LevenshteinWithDistanceThreshold;
+import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 
 public class SpomMatchScorer {

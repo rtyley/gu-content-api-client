@@ -1,4 +1,4 @@
-package com.madgag.spom.util;
+package com.madgag.text.util;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;

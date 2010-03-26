@@ -1,4 +1,4 @@
-package com.madgag.spom.util;
+package com.madgag.text.util;
 
 import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.is;
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.Test;
+
+import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 
 
@@ -71,7 +73,7 @@ public class LevenshteinWithDistanceThresholdTest {
 		
 		long startTime,endTime;
 		int trueCost=StringUtils.getLevenshteinDistance(s1, s2);
-		
+		System.out.println("trueCost : "+trueCost);
 		startTime=currentTimeMillis();
 		for (int i=0;i<n;++i) {
 			total+=StringUtils.getLevenshteinDistance(s1, s2);

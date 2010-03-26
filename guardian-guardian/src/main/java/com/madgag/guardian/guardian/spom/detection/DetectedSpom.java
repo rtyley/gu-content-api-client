@@ -1,4 +1,4 @@
-package com.madgag.spom.detection;
+package com.madgag.guardian.guardian.spom.detection;
 
 public class DetectedSpom {
 

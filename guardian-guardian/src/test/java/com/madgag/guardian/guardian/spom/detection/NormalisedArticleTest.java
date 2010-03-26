@@ -1,9 +1,11 @@
-package com.madgag.spom.detection;
+package com.madgag.guardian.guardian.spom.detection;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+
+import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 
 
 public class NormalisedArticleTest {
