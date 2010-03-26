@@ -3,9 +3,12 @@ package com.madgag.guardian.contentapi.jaxb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 
@@ -38,5 +41,13 @@ public class ResponseTest {
 		assertThat(response.total, equalTo(374));
 		assertThat(response.startIndex, equalTo(1));
 		assertThat(response.contents.size(),equalTo(1));
+	}
+	
+
+	@Test
+	public void booYah() throws JAXBException, IOException {
+		URL url = new URL("http://content.guardianapis.com/search?from-date=2010-03-25&to-date=2010-03-25&format=xml&show-fields=short-url&page-size=20");
+		Response response = (Response) JAXBContext.newInstance(Response.class).createUnmarshaller().unmarshal(url.openStream());
+		System.out.println(response.total);
 	}
 }

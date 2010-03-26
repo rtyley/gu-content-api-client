@@ -3,9 +3,13 @@ package com.madgag.guardian.contentapi.jaxb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 
@@ -41,5 +45,6 @@ public class ContentTest {
 		assertThat(content.getField("headline"), equalTo("Gavin Friday: 'You can't be what you were'"));
 		assertThat(content.tags.size(), equalTo(3));
 	}
+	
 
 }
