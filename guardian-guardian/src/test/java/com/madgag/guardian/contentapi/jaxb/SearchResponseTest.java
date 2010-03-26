@@ -13,7 +13,7 @@ import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 
-public class ResponseTest {
+public class SearchResponseTest {
 	@Test
 	public void shouldParseResponseXml() throws Exception {
 		String responseXml="<response status=\"ok\" total=\"374\" start-index=\"1\" user-tier=\"free\"\n" + 
@@ -36,7 +36,7 @@ public class ResponseTest {
 				"		</content>\n" + 
 				"	</results>\n" + 
 				"</response>";
-		Response response = (Response) JAXBContext.newInstance(Response.class).createUnmarshaller().unmarshal(new StringReader(responseXml));
+		SearchResponse response = (SearchResponse) JAXBContext.newInstance(SearchResponse.class).createUnmarshaller().unmarshal(new StringReader(responseXml));
 		assertThat(response.status, equalTo("ok"));
 		assertThat(response.total, equalTo(374));
 		assertThat(response.startIndex, equalTo(1));
@@ -47,7 +47,7 @@ public class ResponseTest {
 	@Test
 	public void booYah() throws JAXBException, IOException {
 		URL url = new URL("http://content.guardianapis.com/search?from-date=2010-03-25&to-date=2010-03-25&format=xml&show-fields=short-url&page-size=20");
-		Response response = (Response) JAXBContext.newInstance(Response.class).createUnmarshaller().unmarshal(url.openStream());
+		SearchResponse response = (SearchResponse) JAXBContext.newInstance(SearchResponse.class).createUnmarshaller().unmarshal(url.openStream());
 		System.out.println(response.total);
 	}
 }

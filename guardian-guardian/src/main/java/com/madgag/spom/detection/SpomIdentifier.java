@@ -5,12 +5,15 @@ import static java.lang.Math.expm1;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+
 public class SpomIdentifier {
 
 	private static final Logger log = Logger.getLogger(SpomIdentifier.class.getName());
 	
 	private final SpomMatchScorer spomMatchScorer;
 
+	@Inject
 	public SpomIdentifier(SpomMatchScorer spomMatchScorer) {
 		this.spomMatchScorer = spomMatchScorer;
 	}

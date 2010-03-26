@@ -5,6 +5,7 @@ import static java.lang.Math.round;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.inject.Inject;
 import com.madgag.spom.util.LevenshteinWithDistanceThreshold;
 
 
@@ -17,6 +18,7 @@ public class SpomMatchScorer {
 	 */
 	public static final float CONTRIBUTOR_DOES_NOT_MATCH_WEIGHTING = 0.07f;
 
+	@Inject
 	public SpomMatchScorer(LevenshteinWithDistanceThreshold levenshteinWithDistanceThreshold) {
 		this.levenshteinWithDistanceThreshold = levenshteinWithDistanceThreshold;
 	}

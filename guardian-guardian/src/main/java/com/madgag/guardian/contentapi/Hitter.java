@@ -4,17 +4,19 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
-import com.madgag.guardian.contentapi.jaxb.Response;
+import com.google.inject.Inject;
+import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
 public class Hitter {
 	
 	private final ApiRequestUrlGenerator urlGenerator;
 	
+	@Inject
 	public Hitter(ApiRequestUrlGenerator urlGenerator) {
 		this.urlGenerator = urlGenerator;
 	}
 	
-	public Response jojo(ApiRequest apiRequest) throws IOException, JAXBException {
-		return Response.unmarshall(urlGenerator.urlFor(apiRequest).openStream());
+	public SearchResponse jojo(ApiRequest apiRequest) throws IOException, JAXBException {
+		return SearchResponse.unmarshall(urlGenerator.urlFor(apiRequest).openStream());
 	}
 }

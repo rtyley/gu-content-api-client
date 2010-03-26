@@ -10,6 +10,8 @@ import javax.xml.bind.JAXBException;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Joiner.MapJoiner;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 public class ApiRequestUrlGenerator {
 	
@@ -22,7 +24,10 @@ public class ApiRequestUrlGenerator {
 		this(serverPath,null);
 	}
 	
-	public ApiRequestUrlGenerator(String serverPath, String apiKey) {
+	@Inject
+	public ApiRequestUrlGenerator(
+			@Named("guardian-content-api.server-path") String serverPath, 
+			@Named("guardian-content-api.key") String apiKey) {
 		this.apiKey = apiKey;
 		this.serverPath = serverPath;
 	}

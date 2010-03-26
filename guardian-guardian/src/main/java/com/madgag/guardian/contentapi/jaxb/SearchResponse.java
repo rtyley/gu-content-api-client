@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
-public class Response {
+@XmlRootElement(name="response")
+public class SearchResponse {
 	
 	private static final JAXBContext JAXB_CONTEXT = createJaxbContext();
 	
@@ -31,19 +31,19 @@ public class Response {
 
 	private static JAXBContext createJaxbContext() {
 		try {
-			return JAXBContext.newInstance(Response.class);
+			return JAXBContext.newInstance(SearchResponse.class);
 		} catch (JAXBException e) {
 			throw new RuntimeException();
 		}
 	}
 	
-	public static Response unmarshall(InputStream inputStream) throws JAXBException {
-		return (Response) createUnmarshaller().unmarshal(inputStream);
+	public static SearchResponse unmarshall(InputStream inputStream) throws JAXBException {
+		return (SearchResponse) createUnmarshaller().unmarshal(inputStream);
 	}
 
 	private static Unmarshaller createUnmarshaller() {
 		try {
-			return Response.JAXB_CONTEXT.createUnmarshaller();
+			return SearchResponse.JAXB_CONTEXT.createUnmarshaller();
 		} catch (JAXBException e) {
 			throw new RuntimeException();
 		}
