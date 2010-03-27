@@ -11,8 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import com.madgag.text.util.LevenshteinWithDistanceThreshold;
-
 
 
 public class LevenshteinWithDistanceThresholdTest {

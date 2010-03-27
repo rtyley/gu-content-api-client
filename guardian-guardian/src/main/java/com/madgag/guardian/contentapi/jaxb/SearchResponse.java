@@ -31,7 +31,7 @@ public class SearchResponse {
 
 	private static JAXBContext createJaxbContext() {
 		try {
-			return JAXBContext.newInstance(SearchResponse.class);
+			return JAXBContext.newInstance(SearchResponse.class, PageResponse.class);
 		} catch (JAXBException e) {
 			throw new RuntimeException();
 		}
@@ -41,7 +41,7 @@ public class SearchResponse {
 		return (SearchResponse) createUnmarshaller().unmarshal(inputStream);
 	}
 
-	private static Unmarshaller createUnmarshaller() {
+	public static Unmarshaller createUnmarshaller() {
 		try {
 			return SearchResponse.JAXB_CONTEXT.createUnmarshaller();
 		} catch (JAXBException e) {

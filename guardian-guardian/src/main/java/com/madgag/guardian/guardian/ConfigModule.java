@@ -1,6 +1,5 @@
 package com.madgag.guardian.guardian;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -21,7 +20,7 @@ public class ConfigModule extends AbstractModule {
 		try {
 			appProperties.load(stream);
 			Names.bindProperties(binder, appProperties);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// This is the preferred way to tell Guice something went wrong
 			binder.addError(e);
 		}

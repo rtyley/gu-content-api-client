@@ -5,8 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
-
 
 public class NormalisedArticleTest {
 

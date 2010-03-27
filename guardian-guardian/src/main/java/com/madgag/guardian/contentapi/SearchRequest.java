@@ -11,8 +11,9 @@ import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
+import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
-public class SearchRequest implements ApiRequest {
+public class SearchRequest implements ApiRequest<SearchResponse> {
 
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(UTC);
 	private static final Joiner COMMA_JOINER = Joiner.on(",");

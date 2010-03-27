@@ -15,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
-import com.madgag.guardian.guardian.spom.detection.SpomMatchScorer;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 @RunWith(MockitoJUnitRunner.class)

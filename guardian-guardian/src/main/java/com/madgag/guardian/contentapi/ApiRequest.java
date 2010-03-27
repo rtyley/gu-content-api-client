@@ -2,7 +2,7 @@ package com.madgag.guardian.contentapi;
 
 import java.util.Map;
 
-public interface ApiRequest {
+public interface ApiRequest<T> {
 	
 	public String getPathPrefix();
 	

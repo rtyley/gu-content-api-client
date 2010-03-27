@@ -22,10 +22,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Sets;
-import com.madgag.guardian.guardian.spom.detection.DetectedSpom;
-import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
-import com.madgag.guardian.guardian.spom.detection.SpomIdentifier;
-import com.madgag.guardian.guardian.spom.detection.SpomMatchScorer;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 

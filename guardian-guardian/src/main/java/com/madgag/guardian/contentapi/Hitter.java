@@ -16,7 +16,7 @@ public class Hitter {
 		this.urlGenerator = urlGenerator;
 	}
 	
-	public SearchResponse jojo(ApiRequest apiRequest) throws IOException, JAXBException {
-		return SearchResponse.unmarshall(urlGenerator.urlFor(apiRequest).openStream());
+	public <T> T jojo(ApiRequest<T> apiRequest) throws IOException, JAXBException {
+		return (T) SearchResponse.createUnmarshaller().unmarshal(urlGenerator.urlFor(apiRequest).openStream());
 	}
 }
