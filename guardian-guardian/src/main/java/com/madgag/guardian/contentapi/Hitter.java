@@ -1,6 +1,8 @@
 package com.madgag.guardian.contentapi;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
@@ -8,6 +10,8 @@ import com.google.inject.Inject;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
 public class Hitter {
+	
+	private static final Logger log = Logger.getLogger(Hitter.class.getName());
 	
 	private final ApiRequestUrlGenerator urlGenerator;
 	
@@ -17,6 +21,8 @@ public class Hitter {
 	}
 	
 	public <T> T jojo(ApiRequest<T> apiRequest) throws IOException, JAXBException {
-		return (T) SearchResponse.createUnmarshaller().unmarshal(urlGenerator.urlFor(apiRequest).openStream());
+		URL url = urlGenerator.urlFor(apiRequest);
+		log.info(url.toString());
+		return (T) SearchResponse.createUnmarshaller().unmarshal(url.openStream());
 	}
 }
