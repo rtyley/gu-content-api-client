@@ -8,3 +8,6 @@ temp-testng-customsuite.xml
 release.properties
 *.iws
 config.properties
+.settings
+.classpath
+.project
