@@ -1,6 +1,6 @@
 package com.madgag.guardian.guardian.spom.detection;
+import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.closeTo;
@@ -13,7 +13,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,12 +22,16 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Sets;
+import com.madgag.guardian.guardian.NormalisedArticleProvider;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpomIdentifierTest {
+
+
 	@Mock SpomMatchScorer spomMatchScorer;
+	NormalisedArticleProvider articleProvider;
 	private SpomIdentifier spomIdentifier;
 	private NormalisedArticle preferredMaster, someMonkey, someOtherMonkey, anArticleWhichLooksVeryLikeTheMaster;
 
@@ -37,8 +41,8 @@ public class SpomIdentifierTest {
 		someMonkey = new NormalisedArticle("someMonkey","",null, newHashSet("foo"));
 		someOtherMonkey = new NormalisedArticle("someOtherMonkey","",null, newHashSet("foo"));
 		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster","",null, newHashSet("foo"));
-		
-		spomIdentifier = new SpomIdentifier(spomMatchScorer);
+		articleProvider=new StubArticleProvider(someMonkey,someOtherMonkey,anArticleWhichLooksVeryLikeTheMaster);
+		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider);
 
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(0.666f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someOtherMonkey), anyInt())).thenReturn(0.667f);
@@ -66,8 +70,8 @@ public class SpomIdentifierTest {
 				"<p>If people and business are to take responsibility, you need government to act as a catalyst. High polluting products will not disappear unless government regulates. New nuclear power stations need planning policy to facilitate them. And if we act through the EU, we green the largest single market in the world. In opposition, you can sound green while embracing Euroscepticism.</p>\n" + 
 				"<p>But in government, unless you choose sides, you get found out. <blockquote><strong>We know this because he who shall not be named has been found out.</blockquote></strong> New Labour won three elections by offering real change, not just in policy but in the way we do politics. We must do so again. So let's stop feeling sorry for ourselves, enjoy a break, and then find the confidence to make our case afresh. <blockquote><strong>With a new leader. That's me.</blockquote></strong></p>";
 		
-		NormalisedArticle canonicalArticle = new NormalisedArticle("goodo",preferredMasterBodyText,null, Sets.newHashSet("foo"));
-		NormalisedArticle spomArticle = new NormalisedArticle("baddo",spomArticleBodyString,null, Sets.newHashSet("bar"));
+		NormalisedArticle canonicalArticle = new NormalisedArticle("goodo",preferredMasterBodyText,null, newHashSet("foo"));
+		NormalisedArticle spomArticle = new NormalisedArticle("baddo",spomArticleBodyString,null, newHashSet("bar"));
 		DetectedSpom detectedSpom = getSpomFor(canonicalArticle,spomArticle);
 		assertThat(detectedSpom, nullValue());
 		
@@ -96,18 +100,15 @@ public class SpomIdentifierTest {
 
 	@Test
 	public void shouldIdentifyBestScoringMatch() throws Exception {
-		List<NormalisedArticle> listOfPossibleSpoms = asList(someMonkey ,anArticleWhichLooksVeryLikeTheMaster, someOtherMonkey);
-
-		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, listOfPossibleSpoms);
+		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, 
+				newHashSet(someMonkey.getId() ,anArticleWhichLooksVeryLikeTheMaster.getId(), someOtherMonkey.getId()));
 		
 		assertThat(detectedSpom.getSpom(), equalTo(anArticleWhichLooksVeryLikeTheMaster));
 	}
 	
 	@Test
 	public void shouldNotIdentifySpomWorseThanThreshold() throws Exception {
-		List<NormalisedArticle> listOfPossibleSpoms = asList(someMonkey, someOtherMonkey);
-		
-		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, listOfPossibleSpoms);
+		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(someMonkey.getId(), someOtherMonkey.getId()));
 		
 		assertThat(detectedSpom, nullValue());
 	}
@@ -122,11 +123,8 @@ public class SpomIdentifierTest {
 	}
 
 	private DetectedSpom getSpomFor(NormalisedArticle preferredMaster,	NormalisedArticle somePossibleSpom) {
-		List<NormalisedArticle> listOfPossibleSpoms = asList(somePossibleSpom);
-		
-		SpomIdentifier spomIdentifier = new SpomIdentifier(new SpomMatchScorer(new LevenshteinWithDistanceThreshold()));
-		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, listOfPossibleSpoms);
-		return detectedSpom;
+		SpomIdentifier spomIdentifier = new SpomIdentifier(new SpomMatchScorer(new LevenshteinWithDistanceThreshold()),new StubArticleProvider(somePossibleSpom));
+		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom.getId()));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -138,6 +136,22 @@ public class SpomIdentifierTest {
 		assertThat((double) spomIdentifier.getThresholdFor(2000),closeTo(0.25f, 0.01f));
 	}
 	
-	
+	public class StubArticleProvider implements NormalisedArticleProvider {
+
+		private final Map<String,NormalisedArticle> articleMap;
+
+		public StubArticleProvider(NormalisedArticle... articles) {
+			articleMap = newHashMap();
+			for (NormalisedArticle na:articles) {
+				articleMap.put(na.getId(), na);
+			}
+		}
+
+		@Override
+		public NormalisedArticle normalisedArticleFor(String id) {
+			return articleMap.get(id);
+		}
+
+	}
 	
 }
