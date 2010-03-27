@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.joda.time.DateTime;
+
 public class NormalisedArticle {
 	private static final Pattern spacePattern = Pattern.compile("\\s{2,}");
 	private static final Pattern nonAlphaNumPattern = Pattern.compile("[^\\s\\p{Alnum}]*");
@@ -13,13 +15,15 @@ public class NormalisedArticle {
 	private String normalisedBodyText;
 	private final String id;
 	private final Set<String> contributorIds;
+	private final DateTime webPublicationDate;
 	
 	public String getNormalisedBodyText() {
 		return normalisedBodyText;
 	}
 
-	public NormalisedArticle(String id, String bodyText, Set<String> contributorIds) {
+	public NormalisedArticle(String id, String bodyText, DateTime webPublicationDate, Set<String> contributorIds) {
 		this.id = id;
+		this.webPublicationDate = webPublicationDate;
 		this.contributorIds = unmodifiableSet(contributorIds);
 		this.normalisedBodyText = normalisedBodyText(bodyText);
 		
@@ -38,6 +42,10 @@ public class NormalisedArticle {
 
 	public String getId() {
 		return id;
+	}
+
+	public DateTime getWebPublicationDate() {
+		return webPublicationDate;
 	}
 
 }

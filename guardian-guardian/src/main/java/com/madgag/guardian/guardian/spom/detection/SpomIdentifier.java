@@ -2,10 +2,11 @@ package com.madgag.guardian.guardian.spom.detection;
 
 import static java.lang.Math.expm1;
 
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.inject.Inject;
+import com.madgag.guardian.guardian.NormalisedArticleProvider;
 
 public class SpomIdentifier {
 
@@ -13,16 +14,20 @@ public class SpomIdentifier {
 	
 	private final SpomMatchScorer spomMatchScorer;
 
+	private final NormalisedArticleProvider articleProvider;
+
 	@Inject
-	public SpomIdentifier(SpomMatchScorer spomMatchScorer) {
+	public SpomIdentifier(SpomMatchScorer spomMatchScorer, NormalisedArticleProvider articleProvider) {
 		this.spomMatchScorer = spomMatchScorer;
+		this.articleProvider = articleProvider;
 	}
 
-	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	List<NormalisedArticle> listOfPossibleSpoms) {
+	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	Set<String> listOfPossibleSpomIds) {
 		float bestMatchScore = getThresholdFor(preferredMaster.getNormalisedBodyText().length());
 		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+bestMatchScore);
 		NormalisedArticle bestMatchedSpom = null;
-		for (NormalisedArticle possibleSpom : listOfPossibleSpoms) {
+		for (String possibleSpomId : listOfPossibleSpomIds) {
+			NormalisedArticle possibleSpom=articleProvider.normalisedArticleFor(possibleSpomId);
 			float currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, bestMatchScore); 
 			if (currentMatchScore < bestMatchScore ) {
 				bestMatchScore = currentMatchScore;

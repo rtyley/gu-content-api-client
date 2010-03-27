@@ -10,7 +10,7 @@ public class NormalisedArticleTest {
 
 	@Test
 	public void shouldCreateNormalisedArticleWithNormalisedBodyText() {
-		NormalisedArticle article = new NormalisedArticle("myId", "<someTag>A \t\t  Body  Text?... &  1 2 3  </someclosingTag>",newHashSet("oo"));
+		NormalisedArticle article = new NormalisedArticle("myId", "<someTag>A \t\t  Body  Text?... &  1 2 3  </someclosingTag>",null, newHashSet("oo"));
 		
 		assertThat(article.getNormalisedBodyText(), equalTo("a body text 1 2 3"));
 		

@@ -43,7 +43,8 @@ public class SearchResponse {
 
 	public static Unmarshaller createUnmarshaller() {
 		try {
-			return SearchResponse.JAXB_CONTEXT.createUnmarshaller();
+			Unmarshaller unmarshaller = SearchResponse.JAXB_CONTEXT.createUnmarshaller();
+			return unmarshaller;
 		} catch (JAXBException e) {
 			throw new RuntimeException();
 		}

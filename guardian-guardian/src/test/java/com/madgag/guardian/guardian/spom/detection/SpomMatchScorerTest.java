@@ -66,6 +66,6 @@ public class SpomMatchScorerTest {
 	}
 
 	private NormalisedArticle normalisedArticleWithText(String bodyText, String... contributor) {
-		return new NormalisedArticle("myId",bodyText, newHashSet(contributor));
+		return new NormalisedArticle("myId",bodyText, null, newHashSet(contributor));
 	}
 }

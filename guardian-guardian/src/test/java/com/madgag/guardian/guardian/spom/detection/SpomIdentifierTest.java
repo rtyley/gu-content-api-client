@@ -33,10 +33,10 @@ public class SpomIdentifierTest {
 
 	@Before
 	public void setUp() {
-		preferredMaster = anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("preferredMaster","",newHashSet("foo"));
-		someMonkey = new NormalisedArticle("someMonkey","",newHashSet("foo"));
-		someOtherMonkey = new NormalisedArticle("someOtherMonkey","",newHashSet("foo"));
-		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster","",newHashSet("foo"));
+		preferredMaster = anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("preferredMaster","",null, newHashSet("foo"));
+		someMonkey = new NormalisedArticle("someMonkey","",null, newHashSet("foo"));
+		someOtherMonkey = new NormalisedArticle("someOtherMonkey","",null, newHashSet("foo"));
+		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster","",null, newHashSet("foo"));
 		
 		spomIdentifier = new SpomIdentifier(spomMatchScorer);
 
@@ -66,8 +66,8 @@ public class SpomIdentifierTest {
 				"<p>If people and business are to take responsibility, you need government to act as a catalyst. High polluting products will not disappear unless government regulates. New nuclear power stations need planning policy to facilitate them. And if we act through the EU, we green the largest single market in the world. In opposition, you can sound green while embracing Euroscepticism.</p>\n" + 
 				"<p>But in government, unless you choose sides, you get found out. <blockquote><strong>We know this because he who shall not be named has been found out.</blockquote></strong> New Labour won three elections by offering real change, not just in policy but in the way we do politics. We must do so again. So let's stop feeling sorry for ourselves, enjoy a break, and then find the confidence to make our case afresh. <blockquote><strong>With a new leader. That's me.</blockquote></strong></p>";
 		
-		NormalisedArticle canonicalArticle = new NormalisedArticle("goodo",preferredMasterBodyText,Sets.newHashSet("foo"));
-		NormalisedArticle spomArticle = new NormalisedArticle("baddo",spomArticleBodyString,Sets.newHashSet("bar"));
+		NormalisedArticle canonicalArticle = new NormalisedArticle("goodo",preferredMasterBodyText,null, Sets.newHashSet("foo"));
+		NormalisedArticle spomArticle = new NormalisedArticle("baddo",spomArticleBodyString,null, Sets.newHashSet("bar"));
 		DetectedSpom detectedSpom = getSpomFor(canonicalArticle,spomArticle);
 		assertThat(detectedSpom, nullValue());
 		
@@ -115,8 +115,8 @@ public class SpomIdentifierTest {
 
 	
 	private DetectedSpom getSpomFor(String preferredMasterBodyText,	String spomArticleBodyString) {
-		NormalisedArticle canonicalArticle = new NormalisedArticle("goodie", preferredMasterBodyText, newHashSet("foo"));
-		NormalisedArticle spomArticle = new NormalisedArticle("baddie", spomArticleBodyString, newHashSet("foo"));
+		NormalisedArticle canonicalArticle = new NormalisedArticle("goodie", preferredMasterBodyText, null, newHashSet("foo"));
+		NormalisedArticle spomArticle = new NormalisedArticle("baddie", spomArticleBodyString, null, newHashSet("foo"));
 
 		return getSpomFor(canonicalArticle, spomArticle);
 	}

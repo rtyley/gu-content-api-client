@@ -6,10 +6,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.joda.time.DateTime;
 
 @XmlRootElement
 public class Content {
-
+	
 	@XmlAttribute(name="web-title")
 	public String webTitle;
 
@@ -29,6 +32,10 @@ public class Content {
 	@XmlElementWrapper(name="fields")
 	@XmlElement(name="field")
 	public List<Field> fields;
+
+	@XmlJavaTypeAdapter(BooBoo.class) // watch out for silent failures of adaptor marshalling...
+	@XmlAttribute(name="web-publication-date", required=true)
+	public DateTime webPublicationDate;
 
 	public String getField(String fieldName) {
 		for (Field field:fields) {

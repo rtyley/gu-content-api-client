@@ -2,11 +2,13 @@ package com.madgag.guardian.contentapi.jaxb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBContext;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 
@@ -37,6 +39,9 @@ public class ContentTest {
 		assertThat(content.webTitle, equalTo("Gavin Friday: 'You can't be what you were'"));
 		assertThat(content.apiUrl, equalTo("http://content.guardianapis.com/music/2010/mar/25/gavin-friday-virgin-prunes"));
 		assertThat(content.webUrl, equalTo("http://www.guardian.co.uk/music/2010/mar/25/gavin-friday-virgin-prunes"));
+		
+		assertThat(content.webPublicationDate, notNullValue());
+		assertThat(content.webPublicationDate.dayOfMonth().get(), equalTo(25));
 		
 		assertThat(content.getField("headline"), equalTo("Gavin Friday: 'You can't be what you were'"));
 		assertThat(content.tags.size(), equalTo(3));
