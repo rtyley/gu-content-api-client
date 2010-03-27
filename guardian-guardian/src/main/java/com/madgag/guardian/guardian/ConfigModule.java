@@ -12,6 +12,7 @@ public class ConfigModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		loadProperties(binder());
+		binder().bind(NormalisedArticleProvider.class).to(ContentApiNormalisedArticleProvider.class);
 	}
 
 	private void loadProperties(Binder binder) {
