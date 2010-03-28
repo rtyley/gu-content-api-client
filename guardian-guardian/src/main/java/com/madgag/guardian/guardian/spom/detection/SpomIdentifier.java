@@ -21,6 +21,7 @@ public class SpomIdentifier {
 	}
 
 	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	Set<String> listOfPossibleSpomIds) {
+		log.info("Identifying spoms for "+preferredMaster.getId());
 		float bestMatchScore = spomMatchScorer.getThresholdFor(preferredMaster);
 		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+bestMatchScore);
 		NormalisedArticle bestMatchedSpom = null;

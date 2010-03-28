@@ -4,6 +4,7 @@ import static com.google.common.collect.Sets.newHashSetWithExpectedSize;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
@@ -15,6 +16,8 @@ import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
 public class SpomCandidateFinder {
+	
+	private static final Logger log = Logger.getLogger(SpomCandidateFinder.class.getName());
 	
 	private final ContentApiClient apiClient;
 
@@ -29,14 +32,18 @@ public class SpomCandidateFinder {
 		SearchResponse boo = apiClient.search()
 			.from(dateTime.minusDays(1)).to(dateTime.plusDays(1))
 			.withTags("type/article")
+			//.showFields("body")
 			.pageSize(50)
 			.execute();
 		Set<String> spomCandidateSet = newHashSetWithExpectedSize(boo.contents.size());
-		for (Content content : boo.contents) {
-			spomCandidateSet.add(content.id);
+		while (boo!=null) {
+			for (Content content : boo.contents) {
+				spomCandidateSet.add(content.id);
+			}
+			boo=boo.next();
 		}
 		spomCandidateSet.remove(preferredArticle.getId());
-		
+		log.info("Found "+spomCandidateSet.size()+" candidates for "+preferredArticle.getId());
 		return spomCandidateSet;
 	}
 }

@@ -22,14 +22,22 @@ public class CachingNormalisedArticleProvider implements NormalisedArticleProvid
 	
 	@Override
 	public NormalisedArticle normalisedArticleFor(String id) {
-		NormalisedArticle na=(NormalisedArticle) cache.get(id);
+		NormalisedArticle na=fetch(id);
 		if (na==null) {
 			na=contentApiNormalisedArticleProvider.normalisedArticleFor(id);
-			cache.put(id, na);
+			store(na);
 		} else {
 			log.info("CACHE-HIT "+id);
 		}
 		return na;
+	}
+
+	private NormalisedArticle fetch(String id) {
+		return (NormalisedArticle) cache.get(id);
+	}
+
+	private void store(NormalisedArticle na) {
+		cache.put(na.getId(), na);
 	}
 
 }

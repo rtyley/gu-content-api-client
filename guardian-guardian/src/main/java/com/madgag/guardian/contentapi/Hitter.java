@@ -16,11 +16,13 @@ public class Hitter {
 		this.urlGenerator = urlGenerator;
 	}
 
-	public <T> T jojo(ApiRequest<T> apiRequest) {
+	public <T extends ApiResponse> T jojo(ApiRequest<T> apiRequest) {
 		try {
 			URL url = urlGenerator.urlFor(apiRequest);
 			log.info(url.toString());
-			return (T) apiRequest.getJaxbContextForResponse().createUnmarshaller().unmarshal(url.openStream());
+			T response = (T) apiRequest.getJaxbContextForResponse().createUnmarshaller().unmarshal(url.openStream());
+			response.setOriginalRequest(apiRequest);
+			return response;
 		} catch (Exception e) {
 			throw new ContentApiException(e);
 		}

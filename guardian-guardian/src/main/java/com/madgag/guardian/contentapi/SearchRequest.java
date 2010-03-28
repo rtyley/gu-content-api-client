@@ -76,4 +76,9 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 		return this;
 	}
 
+	public SearchRequest page(int page) {
+		moo.put("page", ""+page);
+		return this;
+	}
+
 }
