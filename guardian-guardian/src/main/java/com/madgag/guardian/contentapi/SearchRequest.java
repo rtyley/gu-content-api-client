@@ -71,4 +71,9 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 		return SearchResponse.JAXB_CONTEXT;
 	}
 
+	public SearchRequest pageSize(int itemsPerPage) {
+		moo.put("page-size", ""+itemsPerPage);
+		return this;
+	}
+
 }

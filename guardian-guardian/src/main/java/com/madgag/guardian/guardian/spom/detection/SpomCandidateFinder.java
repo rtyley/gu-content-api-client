@@ -19,7 +19,7 @@ public class SpomCandidateFinder {
 	private final ContentApiClient apiClient;
 
 	@Inject
-	public SpomCandidateFinder( ContentApiClient apiClient) {
+	public SpomCandidateFinder(ContentApiClient apiClient) {
 		this.apiClient = apiClient;
 	}
 	
@@ -28,6 +28,8 @@ public class SpomCandidateFinder {
 		
 		SearchResponse boo = apiClient.search()
 			.from(dateTime.minusDays(1)).to(dateTime.plusDays(1))
+			.withTags("type/article")
+			.pageSize(50)
 			.execute();
 		Set<String> spomCandidateSet = newHashSetWithExpectedSize(boo.contents.size());
 		for (Content content : boo.contents) {

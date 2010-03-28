@@ -2,11 +2,12 @@ package com.madgag.guardian.guardian;
 
 import static com.google.common.collect.Lists.transform;
 
-import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheManager;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -20,9 +21,14 @@ import com.madgag.guardian.guardian.spom.detection.SpomCandidateFinder;
 import com.madgag.guardian.guardian.spom.detection.SpomIdentifier;
 
 public class Main {
-	public static void main(String[] args) throws IOException, JAXBException {
+	public static void main(String[] args) throws Exception {
+		
+		
+		Cache cache = CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
+		
+		
 		Injector injector = Guice.createInjector(new ConfigModule());
-	     
+	    
 	    Interval searchInterval = new Interval(new DateTime(2009, 9, 17, 0, 0, 0, 0),new DateTime(2009, 9, 23, 0, 0, 0, 0));
 	    ContentApiClient apiClient=injector.getInstance(ContentApiClient.class);
 	    

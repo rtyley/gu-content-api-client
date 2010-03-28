@@ -17,6 +17,8 @@
     </organization>
     <modules>
         <module>guardian-guardian</module>
+	<module>guardian-guardian-gae</module>
+	<module>guardian-guardian-local</module>
     </modules>
     <dependencies>
         <dependency>
