@@ -2,13 +2,10 @@ package com.madgag.guardian.guardian.spom.detection;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
@@ -18,17 +15,16 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.collect.Sets;
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpomIdentifierTest {
-
 
 	@Mock SpomMatchScorer spomMatchScorer;
 	NormalisedArticleProvider articleProvider;
@@ -44,6 +40,7 @@ public class SpomIdentifierTest {
 		articleProvider=new StubArticleProvider(someMonkey,someOtherMonkey,anArticleWhichLooksVeryLikeTheMaster);
 		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider);
 
+		when(spomMatchScorer.getThresholdFor(any(NormalisedArticle.class))).thenReturn(0.1f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(0.666f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someOtherMonkey), anyInt())).thenReturn(0.667f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(anArticleWhichLooksVeryLikeTheMaster), anyInt())).thenReturn(0.03f);
@@ -86,17 +83,6 @@ public class SpomIdentifierTest {
 				spomArticleBodyString);
 		assertThat(detectedSpom, not(nullValue()));
 	}
-	
-
-	
-	private String textOfLength(int len) {
-		StringBuilder sb = new StringBuilder(len);
-		for (int i=0;i<len;++i) {
-			sb.append("a");
-		}
-		return sb.toString();
-	}
-
 
 	@Test
 	public void shouldIdentifyBestScoringMatch() throws Exception {
@@ -127,14 +113,7 @@ public class SpomIdentifierTest {
 		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom.getId()));
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Test
-	public void shouldBeMoreLenientToBigArticles() throws Exception {
-		assertThat(spomIdentifier.getThresholdFor(8)*8f,lessThan(1f));
-		assertThat(spomIdentifier.getThresholdFor(30)*30f,allOf(greaterThanOrEqualTo(1f),lessThan(2f)));
-		assertThat(spomIdentifier.getThresholdFor(100)*100f,allOf(greaterThanOrEqualTo(9f),lessThan(12f)));
-		assertThat((double) spomIdentifier.getThresholdFor(2000),closeTo(0.25f, 0.01f));
-	}
+
 	
 	public class StubArticleProvider implements NormalisedArticleProvider {
 

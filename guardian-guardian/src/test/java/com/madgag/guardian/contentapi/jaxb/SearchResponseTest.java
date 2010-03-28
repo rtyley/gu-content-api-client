@@ -42,12 +42,4 @@ public class SearchResponseTest {
 		assertThat(response.startIndex, equalTo(1));
 		assertThat(response.contents.size(),equalTo(1));
 	}
-	
-
-	@Test
-	public void booYah() throws JAXBException, IOException {
-		URL url = new URL("http://content.guardianapis.com/search?from-date=2010-03-25&to-date=2010-03-25&format=xml&show-fields=short-url&page-size=20");
-		SearchResponse response = (SearchResponse) JAXBContext.newInstance(SearchResponse.class).createUnmarshaller().unmarshal(url.openStream());
-		System.out.println(response.total);
-	}
 }

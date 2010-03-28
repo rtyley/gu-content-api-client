@@ -1,9 +1,12 @@
 package com.madgag.guardian.guardian.spom.detection;
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -65,6 +68,27 @@ public class SpomMatchScorerTest {
 		assertThat(scoreForGoodMatch, lessThan(scoreForBadMatch));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void shouldBeMoreLenientToBigArticles() throws Exception {
+		assertThat(spomMatchScorer.getThresholdFor(articleWithBodyLength(8))*8f,lessThan(1f));
+		assertThat(spomMatchScorer.getThresholdFor(articleWithBodyLength(30))*30f,allOf(greaterThanOrEqualTo(1f),lessThan(2f)));
+		assertThat(spomMatchScorer.getThresholdFor(articleWithBodyLength(100))*100f,allOf(greaterThanOrEqualTo(9f),lessThan(12f)));
+		assertThat((double) spomMatchScorer.getThresholdFor(articleWithBodyLength(2000)),closeTo(0.25f, 0.01f));
+	}
+	
+	private NormalisedArticle articleWithBodyLength(int length) {
+		return normalisedArticleWithText(textOfLength(length));
+	}
+	
+	private String textOfLength(int len) {
+		StringBuilder sb = new StringBuilder(len);
+		for (int i=0;i<len;++i) {
+			sb.append("a");
+		}
+		return sb.toString();
+	}
+	
 	private NormalisedArticle normalisedArticleWithText(String bodyText, String... contributor) {
 		return new NormalisedArticle("myId",bodyText, null, newHashSet(contributor));
 	}

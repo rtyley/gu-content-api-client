@@ -23,7 +23,7 @@ public class SpomIdentifier {
 	}
 
 	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	Set<String> listOfPossibleSpomIds) {
-		float bestMatchScore = getThresholdFor(preferredMaster.getNormalisedBodyText().length());
+		float bestMatchScore = spomMatchScorer.getThresholdFor(preferredMaster);
 		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+bestMatchScore);
 		NormalisedArticle bestMatchedSpom = null;
 		for (String possibleSpomId : listOfPossibleSpomIds) {
@@ -42,8 +42,6 @@ public class SpomIdentifier {
 		return detectedSpom;
 	}
 	
-	float getThresholdFor(int textLength) {
-		return (float) (0.25*(-expm1(-(textLength/200.0f))));
-	}
+	
 
 }
