@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 public class NormalisedArticle {
 	private static final Pattern spacePattern = Pattern.compile("\\s{2,}");
 	private static final Pattern nonAlphaNumPattern = Pattern.compile("[^\\s\\p{Alnum}]*");
+	private static final Pattern tagPattern = Pattern.compile("<.+?>");
 
 	private String normalisedBodyText;
 	private final String id;
@@ -31,7 +32,7 @@ public class NormalisedArticle {
 
 	private String normalisedBodyText(String bodyText) {
 		//AllTagCleaner allTagCleaner = new AllTagCleaner();
-		String textWithNoTags = bodyText; //allTagCleaner.clean(bodyText);
+		String textWithNoTags = tagPattern.matcher(bodyText).replaceAll(""); //allTagCleaner.clean(bodyText);
 		String textWithoutNonAlphaNum = nonAlphaNumPattern.matcher(textWithNoTags).replaceAll("");
 		return spacePattern.matcher(textWithoutNonAlphaNum).replaceAll(" ").trim().toLowerCase();
 	}
