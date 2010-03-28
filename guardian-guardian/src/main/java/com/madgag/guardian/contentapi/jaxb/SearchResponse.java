@@ -1,11 +1,8 @@
 package com.madgag.guardian.contentapi.jaxb;
 
-import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -14,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="response")
 public class SearchResponse {
 	
-	private static final JAXBContext JAXB_CONTEXT = createJaxbContext();
+	public static final JAXBContext JAXB_CONTEXT = JAXBUtil.createJAXBContextFor(SearchResponse.class);
 	
 	@XmlAttribute
 	public String status;
@@ -29,25 +26,5 @@ public class SearchResponse {
 	@XmlElement(name="content")
 	public List<Content> contents;
 
-	private static JAXBContext createJaxbContext() {
-		try {
-			return JAXBContext.newInstance(SearchResponse.class, PageResponse.class);
-		} catch (JAXBException e) {
-			throw new RuntimeException();
-		}
-	}
-	
-	public static SearchResponse unmarshall(InputStream inputStream) throws JAXBException {
-		return (SearchResponse) createUnmarshaller().unmarshal(inputStream);
-	}
-
-	public static Unmarshaller createUnmarshaller() {
-		try {
-			Unmarshaller unmarshaller = SearchResponse.JAXB_CONTEXT.createUnmarshaller();
-			return unmarshaller;
-		} catch (JAXBException e) {
-			throw new RuntimeException();
-		}
-	}
 
 }

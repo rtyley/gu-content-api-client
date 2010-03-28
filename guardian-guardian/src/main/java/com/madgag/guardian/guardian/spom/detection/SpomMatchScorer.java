@@ -2,15 +2,19 @@ package com.madgag.guardian.guardian.spom.detection;
 
 import static java.lang.Math.expm1;
 import static java.lang.Math.round;
+import static java.util.logging.Level.FINE;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.google.inject.Inject;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 public class SpomMatchScorer {
 
+	private static final Logger log = Logger.getLogger(SpomMatchScorer.class.getName());
+	
 	private final LevenshteinWithDistanceThreshold levenshteinWithDistanceThreshold;
 
 	/*
@@ -27,6 +31,10 @@ public class SpomMatchScorer {
 
 	public float getMatchScore(NormalisedArticle preferredMaster,
 			NormalisedArticle possibleSpom, float minimumSuccessfulScore) {
+		if (log.isLoggable(FINE)) {
+			log.fine("Comparing "+preferredMaster.getId()+" & "+possibleSpom.getId());
+		}
+		
 		String preferredMasterBodyText = preferredMaster
 				.getNormalisedBodyText();
 		String possibleSpomBodyText = possibleSpom.getNormalisedBodyText();

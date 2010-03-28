@@ -8,29 +8,27 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 
 import com.google.inject.Inject;
-import com.madgag.guardian.contentapi.Hitter;
-import com.madgag.guardian.contentapi.SearchRequest;
+import com.madgag.guardian.contentapi.ContentApiClient;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
 public class SpomCandidateFinder {
 	
-	private final Hitter hitter;
+	private final ContentApiClient apiClient;
 
 	@Inject
-	public SpomCandidateFinder(Hitter hitter) {
-		this.hitter = hitter;
+	public SpomCandidateFinder( ContentApiClient apiClient) {
+		this.apiClient = apiClient;
 	}
 	
 	public Set<String> findSpomCandidatesFor(NormalisedArticle preferredArticle) throws IOException, JAXBException {
-		SearchRequest searchRequest=new SearchRequest();
 		DateTime dateTime = preferredArticle.getWebPublicationDate();
 		
-		searchRequest.setInterval(new Interval(dateTime.minusDays(1),dateTime.plusDays(1)));
-		SearchResponse boo = hitter.jojo(searchRequest);
+		SearchResponse boo = apiClient.search()
+			.from(dateTime.minusDays(1)).to(dateTime.plusDays(1))
+			.execute();
 		Set<String> spomCandidateSet = newHashSetWithExpectedSize(boo.contents.size());
 		for (Content content : boo.contents) {
 			spomCandidateSet.add(content.id);

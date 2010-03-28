@@ -3,12 +3,9 @@ package com.madgag.guardian.contentapi.jaxb;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 

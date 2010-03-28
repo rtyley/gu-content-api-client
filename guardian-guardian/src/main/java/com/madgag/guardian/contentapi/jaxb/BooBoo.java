@@ -11,10 +11,6 @@ import org.joda.time.format.ISODateTimeFormat;
 
 public class BooBoo extends XmlAdapter<String, DateTime> {
 	private static DateTimeFormatter ISO_FORMAT = ISODateTimeFormat.dateTimeNoMillis();
-	
-	public BooBoo() {
-		System.out.println("moo");
-	}
 
 	@Override
 	public String marshal(DateTime v) throws Exception {

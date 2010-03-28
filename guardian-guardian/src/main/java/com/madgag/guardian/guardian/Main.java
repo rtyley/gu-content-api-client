@@ -13,8 +13,7 @@ import org.joda.time.Interval;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.madgag.guardian.contentapi.Hitter;
-import com.madgag.guardian.contentapi.SearchRequest;
+import com.madgag.guardian.contentapi.ContentApiClient;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 import com.madgag.guardian.guardian.spom.detection.SpomCandidateFinder;
@@ -23,17 +22,14 @@ import com.madgag.guardian.guardian.spom.detection.SpomIdentifier;
 public class Main {
 	public static void main(String[] args) throws IOException, JAXBException {
 		Injector injector = Guice.createInjector(new ConfigModule());
-	    Hitter hitter = injector.getInstance(Hitter.class);
+	     
+	    Interval searchInterval = new Interval(new DateTime(2009, 9, 17, 0, 0, 0, 0),new DateTime(2009, 9, 23, 0, 0, 0, 0));
+	    ContentApiClient apiClient=injector.getInstance(ContentApiClient.class);
 	    
-		SearchRequest searchRequest = new SearchRequest();
+	    SearchResponse searchResponse=
+	    	apiClient.search().during(searchInterval).withTags("culture/eddie-izzard").showFields("body").execute();
 	    
-	    searchRequest.setInterval(new Interval(new DateTime(2009, 9, 17, 0, 0, 0, 0),new DateTime(2009, 9, 23, 0, 0, 0, 0)));
-	    searchRequest.setTags("culture/eddie-izzard");
-	    searchRequest.showFields("body");
-	    
-	    SearchResponse response = hitter.jojo(searchRequest);
-	    
-	    List<NormalisedArticle> nas = transform(response.contents, new ContentNormaliserTransform());
+	    List<NormalisedArticle> nas = transform(searchResponse.contents, new ContentNormaliserTransform());
 	    
 	    SpomCandidateFinder spomCandidateFinder=injector.getInstance(SpomCandidateFinder.class);
 	    SpomIdentifier spomIdentifier=injector.getInstance(SpomIdentifier.class);
@@ -41,9 +37,5 @@ public class Main {
 	    	Set<String> candidates=spomCandidateFinder.findSpomCandidatesFor(na);
 	    	spomIdentifier.identifySpomsFor(na, candidates);
 	    }
-	    
-	    
-	    //spomIdentifier.identifySpomsFor(nas.get(0), nas.subList(1, nas.size()));
-	    
 	}
 }
