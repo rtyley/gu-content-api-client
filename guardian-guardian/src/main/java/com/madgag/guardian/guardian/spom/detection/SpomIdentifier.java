@@ -1,7 +1,5 @@
 package com.madgag.guardian.guardian.spom.detection;
 
-import static java.lang.Math.expm1;
-
 import java.util.Set;
 import java.util.logging.Logger;
 

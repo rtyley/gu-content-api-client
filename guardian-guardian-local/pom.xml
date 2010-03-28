@@ -18,5 +18,10 @@
 			<artifactId>guardian-guardian</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-jcache</artifactId>
+			<version>1.2</version>
+		</dependency>
 	</dependencies>
 </project>
