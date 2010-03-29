@@ -13,6 +13,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
 public class SearchRequest implements ApiRequest<SearchResponse> {
@@ -20,19 +22,30 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(UTC);
 	private static final Joiner COMMA_JOINER = Joiner.on(",");
 	
-	Map<String,String> moo=newHashMap();
+	private final ImmutableMap<String,String> moo;
 	
 	private final Hitter hitter;
 	
 	public SearchRequest(Hitter hitter) {
 		this.hitter = hitter;
+		moo = ImmutableMap.of();
+	}
+	
+	public SearchRequest(Hitter hitter, ImmutableMap<String,String> moo) {
+		this.hitter = hitter;
+		this.moo = moo;
 	}
 
 	public SearchRequest withTags(String... tags) {
-		moo.put("tag", COMMA_JOINER.join(tags));
-		return this;
+		return newSearchRequestWith("tag", COMMA_JOINER.join(tags));
 	}
 	
+	private SearchRequest newSearchRequestWith(String key, String val) {
+		Map<String,String> m=newHashMap(moo);
+		m.put(key, val);
+		return new SearchRequest(hitter, ImmutableMap.copyOf(m));
+	}
+
 	@Override
 	public Map<String, String> getParams() {
 		return moo;
@@ -45,18 +58,15 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 
 
 	public SearchRequest to(DateTime end) {
-		moo.put("to-date", DATE_FORMAT.print(end));
-		return this;
+		return newSearchRequestWith("to-date", DATE_FORMAT.print(end));
 	}
 
 	public SearchRequest from(DateTime start) {
-		moo.put("from-date", DATE_FORMAT.print(start));
-		return this;
+		return newSearchRequestWith("from-date", DATE_FORMAT.print(start));
 	}
 
 	public SearchRequest showFields(String... fields) {
-		moo.put("show-fields", COMMA_JOINER.join(fields));
-		return this;
+		return newSearchRequestWith("show-fields", COMMA_JOINER.join(fields));
 	}
 
 	public SearchRequest during(ReadableInterval searchInterval) {
@@ -72,13 +82,11 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 	}
 
 	public SearchRequest pageSize(int itemsPerPage) {
-		moo.put("page-size", ""+itemsPerPage);
-		return this;
+		return newSearchRequestWith("page-size", ""+itemsPerPage);
 	}
 
 	public SearchRequest page(int page) {
-		moo.put("page", ""+page);
-		return this;
+		return newSearchRequestWith("page", ""+page);
 	}
 
 }
