@@ -36,7 +36,7 @@ public class CachingNormalisedArticleProvider implements NormalisedArticleProvid
 		return (NormalisedArticle) cache.get(id);
 	}
 
-	private void store(NormalisedArticle na) {
+	public void store(NormalisedArticle na) {
 		cache.put(na.getId(), na);
 	}
 

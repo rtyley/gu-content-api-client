@@ -14,6 +14,8 @@ import com.google.inject.Inject;
 import com.madgag.guardian.contentapi.ContentApiClient;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
+import com.madgag.guardian.guardian.CachingNormalisedArticleProvider;
+import com.madgag.guardian.guardian.ContentNormaliserTransform;
 
 public class SpomCandidateFinder {
 	
@@ -21,9 +23,12 @@ public class SpomCandidateFinder {
 	
 	private final ContentApiClient apiClient;
 
+	private final CachingNormalisedArticleProvider cachingNormalisedArticleProvider; // this is badness, right?
+
 	@Inject
-	public SpomCandidateFinder(ContentApiClient apiClient) {
+	public SpomCandidateFinder(ContentApiClient apiClient, CachingNormalisedArticleProvider cachingNormalisedArticleProvider) {
 		this.apiClient = apiClient;
+		this.cachingNormalisedArticleProvider = cachingNormalisedArticleProvider;
 	}
 	
 	public Set<String> findSpomCandidatesFor(NormalisedArticle preferredArticle) throws IOException, JAXBException {
@@ -32,13 +37,14 @@ public class SpomCandidateFinder {
 		SearchResponse boo = apiClient.search()
 			.from(dateTime.minusDays(1)).to(dateTime.plusDays(1))
 			.withTags("type/article")
-			//.showFields("body")
+			.showFields("body")
 			.pageSize(50)
 			.execute();
-		Set<String> spomCandidateSet = newHashSetWithExpectedSize(boo.contents.size());
+		Set<String> spomCandidateSet = newHashSetWithExpectedSize(boo.total);
 		while (boo!=null) {
 			for (Content content : boo.contents) {
 				spomCandidateSet.add(content.id);
+				cachingNormalisedArticleProvider.store(new ContentNormaliserTransform().apply(content));
 			}
 			boo=boo.next();
 		}

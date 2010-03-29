@@ -8,7 +8,7 @@ public class LocalServerConfig extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		binder().bind(Cache.class).toProvider(FunkyCacheProvider.class);
+		binder().bind(Cache.class).toProvider(FunkyCacheProvider.class).asEagerSingleton();
 	}
 
 }

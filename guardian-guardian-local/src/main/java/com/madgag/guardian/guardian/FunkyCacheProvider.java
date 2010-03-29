@@ -16,6 +16,7 @@ public class FunkyCacheProvider implements Provider<Cache> {
 		CacheConfiguration cacheConfiguration = new CacheConfiguration();
 		cacheConfiguration.setName("sampleCacheNoIdle");
 		cacheConfiguration.setMaxElementsInMemory(1000000);
+		cacheConfiguration.setEternal(true);
 		configuration.addCache(cacheConfiguration);
 		
 		CacheConfiguration defCache = new CacheConfiguration();
