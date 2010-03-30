@@ -15,11 +15,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import twitter4j.Twitter;
 
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
@@ -29,7 +26,7 @@ import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 public class SpomIdentifierTest {
 
 	@Mock SpomMatchScorer spomMatchScorer;
-	@Mock Twitter twitter;
+	@Mock SpomDetectionReporter spomDetectionReporter;
 	NormalisedArticleProvider articleProvider;
 	private SpomIdentifier spomIdentifier;
 	private NormalisedArticle preferredMaster, someMonkey, someOtherMonkey, anArticleWhichLooksVeryLikeTheMaster;
@@ -41,7 +38,7 @@ public class SpomIdentifierTest {
 		someOtherMonkey = new NormalisedArticle("someOtherMonkey",null,null, "", null, null);
 		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster",null,null, "", null, null);
 		articleProvider=new StubArticleProvider(someMonkey,someOtherMonkey,anArticleWhichLooksVeryLikeTheMaster);
-		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider,twitter);
+		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider, spomDetectionReporter);
 
 		when(spomMatchScorer.getThresholdFor(any(NormalisedArticle.class))).thenReturn(0.1f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(0.666f);
@@ -112,7 +109,8 @@ public class SpomIdentifierTest {
 	}
 
 	private DetectedSpom getSpomFor(NormalisedArticle preferredMaster,	NormalisedArticle somePossibleSpom) {
-		SpomIdentifier spomIdentifier = new SpomIdentifier(new SpomMatchScorer(new LevenshteinWithDistanceThreshold()),new StubArticleProvider(somePossibleSpom),twitter);
+		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
+		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,new StubArticleProvider(somePossibleSpom),spomDetectionReporter);
 		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom.getId()));
 	}
 	

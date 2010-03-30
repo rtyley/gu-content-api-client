@@ -1,14 +1,9 @@
 package com.madgag.guardian.guardian.spom.detection;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static java.lang.Math.round;
 
 import java.util.Collection;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.WordUtils;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
 
 import com.google.inject.Inject;
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
@@ -21,13 +16,14 @@ public class SpomIdentifier {
 
 	private final NormalisedArticleProvider articleProvider;
 
-	private final Twitter twitter;
+	private final SpomDetectionReporter spomDetectionReporter;
+
 
 	@Inject
-	public SpomIdentifier(SpomMatchScorer spomMatchScorer, NormalisedArticleProvider articleProvider, Twitter twitter) {
+	public SpomIdentifier(SpomMatchScorer spomMatchScorer, NormalisedArticleProvider articleProvider, SpomDetectionReporter spomDetectionReporter) {
 		this.spomMatchScorer = spomMatchScorer;
 		this.articleProvider = articleProvider;
-		this.twitter = twitter;
+		this.spomDetectionReporter = spomDetectionReporter;
 	}
 
 	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	Collection<String> listOfPossibleSpomIds) {
@@ -42,7 +38,7 @@ public class SpomIdentifier {
 				float currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, bestMatchScore); 
 				if (currentMatchScore < bestMatchScore ) {
 					log.info("Found possible! "+currentMatchScore+" "+possibleSpomId);
-					reportStuff(preferredMaster, possibleSpom, currentMatchScore);
+					spomDetectionReporter.reportStuff(preferredMaster, possibleSpom, currentMatchScore);
 					bestMatchScore = currentMatchScore;
 					bestMatchedSpom = possibleSpom;
 				}
@@ -56,17 +52,4 @@ public class SpomIdentifier {
 		return detectedSpom;
 	}
 
-	private void reportStuff(NormalisedArticle preferredMaster, NormalisedArticle possibleSpom, float currentMatchScore) {
-		try {
-            String tweetText = "Wu-oh : \u0394=" + round(currentMatchScore * 100) + "% " + quickSummary(preferredMaster) + " & " + quickSummary(possibleSpom);
-            log.info("tweetText ("+tweetText.length()+" chars): "+tweetText);
-            twitter.updateStatus(tweetText);
-		} catch (TwitterException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private String quickSummary(NormalisedArticle na) {
-		return na.getShortUrl()+" \""+ WordUtils.abbreviate(na.getTitle(),30,35,"\u2026")+"\"";
-	}
 }

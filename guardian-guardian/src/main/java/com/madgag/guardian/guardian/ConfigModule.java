@@ -11,6 +11,8 @@ import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import com.madgag.guardian.guardian.spom.detection.SpomDetectionReporter;
+import com.madgag.guardian.guardian.spom.detection.TwitterReporter;
 
 public class ConfigModule extends AbstractModule {
 
@@ -18,6 +20,7 @@ public class ConfigModule extends AbstractModule {
 	protected void configure() {
 		loadProperties(binder());
 		binder().bind(NormalisedArticleProvider.class).to(CachingNormalisedArticleProvider.class);
+		binder().bind(SpomDetectionReporter.class).to(TwitterReporter.class);
 		//binder().bind(NormalisedArticleProvider.class).to(ContentApiNormalisedArticleProvider.class);
 	}
 
