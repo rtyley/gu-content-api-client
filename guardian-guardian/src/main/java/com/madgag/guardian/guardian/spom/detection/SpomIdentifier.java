@@ -1,7 +1,13 @@
 package com.madgag.guardian.guardian.spom.detection;
 
-import java.util.Set;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.Math.round;
+
+import java.util.Collection;
 import java.util.logging.Logger;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
 
 import com.google.inject.Inject;
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
@@ -14,23 +20,31 @@ public class SpomIdentifier {
 
 	private final NormalisedArticleProvider articleProvider;
 
+	private final Twitter twitter;
+
 	@Inject
-	public SpomIdentifier(SpomMatchScorer spomMatchScorer, NormalisedArticleProvider articleProvider) {
+	public SpomIdentifier(SpomMatchScorer spomMatchScorer, NormalisedArticleProvider articleProvider, Twitter twitter) {
 		this.spomMatchScorer = spomMatchScorer;
 		this.articleProvider = articleProvider;
+		this.twitter = twitter;
 	}
 
-	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	Set<String> listOfPossibleSpomIds) {
-		log.info("Identifying spoms for "+preferredMaster.getId());
+	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	Collection<String> listOfPossibleSpomIds) {
+		listOfPossibleSpomIds = newHashSet(listOfPossibleSpomIds);
+		listOfPossibleSpomIds.remove(preferredMaster.getId());
 		float bestMatchScore = spomMatchScorer.getThresholdFor(preferredMaster);
-		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+bestMatchScore);
+		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+bestMatchScore+" candidates:"+listOfPossibleSpomIds.size());
 		NormalisedArticle bestMatchedSpom = null;
 		for (String possibleSpomId : listOfPossibleSpomIds) {
 			NormalisedArticle possibleSpom=articleProvider.normalisedArticleFor(possibleSpomId);
-			float currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, bestMatchScore); 
-			if (currentMatchScore < bestMatchScore ) {
-				bestMatchScore = currentMatchScore;
-				bestMatchedSpom = possibleSpom;
+			if (possibleSpom!=null) {
+				float currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, bestMatchScore); 
+				if (currentMatchScore < bestMatchScore ) {
+					log.info("Found possible! "+currentMatchScore+" "+possibleSpomId);
+					reportStuff(preferredMaster, possibleSpom, currentMatchScore);
+					bestMatchScore = currentMatchScore;
+					bestMatchedSpom = possibleSpom;
+				}
 			}
 		}
 		if (bestMatchedSpom==null) {
@@ -39,6 +53,18 @@ public class SpomIdentifier {
 		DetectedSpom detectedSpom = new DetectedSpom(preferredMaster, bestMatchedSpom);
 		log.info("Found SPOM! "+detectedSpom);
 		return detectedSpom;
+	}
+
+	private void reportStuff(NormalisedArticle preferredMaster, NormalisedArticle possibleSpom, float currentMatchScore) {
+		try {
+			twitter.updateStatus("Wu-oh : Δ="+round(currentMatchScore*100)+"% "+quickSummary(preferredMaster)+" & "+quickSummary(possibleSpom));
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String quickSummary(NormalisedArticle na) {
+		return na.getShortUrl()+" \""+na.getTitle()+"\"";
 	}
 	
 	

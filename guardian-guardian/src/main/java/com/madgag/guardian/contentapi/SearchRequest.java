@@ -14,7 +14,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
 public class SearchRequest implements ApiRequest<SearchResponse> {
@@ -69,6 +68,10 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 		return newSearchRequestWith("show-fields", COMMA_JOINER.join(fields));
 	}
 
+	public SearchRequest showTags(String... tagTypes) {
+		return newSearchRequestWith("show-tags", COMMA_JOINER.join(tagTypes));
+	}
+
 	public SearchRequest during(ReadableInterval searchInterval) {
 		return from(searchInterval.getStart()).to(searchInterval.getEnd());
 	}
@@ -88,5 +91,6 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 	public SearchRequest page(int page) {
 		return newSearchRequestWith("page", ""+page);
 	}
+
 
 }

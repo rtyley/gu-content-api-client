@@ -1,14 +1,20 @@
 package com.madgag.guardian.guardian.spom.detection;
 
+import static com.google.common.collect.Sets.intersection;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Math.expm1;
 import static java.lang.Math.round;
 import static java.util.logging.Level.FINE;
+import static org.joda.time.Duration.standardHours;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
+import org.joda.time.Duration;
+
+import com.google.common.collect.Sets.SetView;
 import com.google.inject.Inject;
+import com.madgag.guardian.contentapi.jaxb.Tag;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 public class SpomMatchScorer {
@@ -35,16 +41,29 @@ public class SpomMatchScorer {
 			log.fine("Comparing "+preferredMaster.getId()+" & "+possibleSpom.getId());
 		}
 		
-		String preferredMasterBodyText = preferredMaster
-				.getNormalisedBodyText();
+		
+		SetView<Tag> commonSeries = intersection(seriesTagsFor(preferredMaster), seriesTagsFor(possibleSpom));
+		Duration duration = new Duration(possibleSpom.getWebPublicationDate(), preferredMaster.getWebPublicationDate());
+		//log.info(commonSeries+" "+duration.toString());
+		if (!commonSeries.isEmpty()) {
+			if (duration.isLongerThan(standardHours(12)) && preferredMaster.getNormalisedBodyText().length()<2000) {
+				// let off boring repeated series...
+				return Float.MAX_VALUE;
+			}
+		}
+		
+		String preferredMasterBodyText = preferredMaster.getNormalisedBodyText();
 		String possibleSpomBodyText = possibleSpom.getNormalisedBodyText();
 
-		Set<String> matchingContributors = new HashSet<String>(preferredMaster
-				.getContributorIds());
-		matchingContributors.retainAll(possibleSpom.getContributorIds());
-
-		boolean hasMatchingContributors = !matchingContributors.isEmpty();
-		float contributorWeighting = getContributorWeighting(hasMatchingContributors);
+//		Set<String> matchingContributors = new HashSet<String>(preferredMaster
+//				.getContributorIds());
+//		matchingContributors.retainAll(possibleSpom.getContributorIds());
+//
+//		boolean hasMatchingContributors = !matchingContributors.isEmpty();
+//		float contributorWeighting = getContributorWeighting(hasMatchingContributors);
+//
+		
+		float contributorWeighting = 0;
 
 		int requiredLevenshteinDistanceThreshold = round((minimumSuccessfulScore - contributorWeighting)
 				* preferredMasterBodyText.length());
@@ -57,6 +76,10 @@ public class SpomMatchScorer {
 		}
 		return ((float) levenDistance / preferredMasterBodyText.length())
 				+ contributorWeighting;
+	}
+
+	private HashSet<Tag> seriesTagsFor(NormalisedArticle preferredMaster) {
+		return newHashSet(preferredMaster.getTags().get("series"));
 	}
 
 	private float getContributorWeighting(boolean hasMatchingContributors) {

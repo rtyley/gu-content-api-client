@@ -1,12 +1,12 @@
 package com.madgag.guardian.guardian.spom.detection;
 
-import static java.util.Collections.unmodifiableSet;
-
-import java.util.Collection;
-import java.util.Set;
+import java.net.URI;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Multimap;
+import com.madgag.guardian.contentapi.jaxb.Tag;
 
 public class NormalisedArticle {
 	private static final Pattern spacePattern = Pattern.compile("\\s{2,}");
@@ -15,30 +15,33 @@ public class NormalisedArticle {
 
 	private String normalisedBodyText;
 	private final String id;
-	private final Set<String> contributorIds;
+	private final Multimap<String, Tag> tags;
 	private final DateTime webPublicationDate;
+	private final String title;
+	private final URI shortUrl;
 	
 	public String getNormalisedBodyText() {
 		return normalisedBodyText;
 	}
 
-	public NormalisedArticle(String id, String bodyText, DateTime webPublicationDate, Set<String> contributorIds) {
+	public NormalisedArticle(String id, String title, URI shortUrl, String bodyText, DateTime webPublicationDate, Multimap<String, Tag> tags) {
 		this.id = id;
+		this.title = title;
+		this.shortUrl = shortUrl;
 		this.webPublicationDate = webPublicationDate;
-		this.contributorIds = unmodifiableSet(contributorIds);
+		this.tags = tags;
 		this.normalisedBodyText = normalisedBodyText(bodyText);
 		
 	}
 
 	private String normalisedBodyText(String bodyText) {
-		//AllTagCleaner allTagCleaner = new AllTagCleaner();
 		String textWithNoTags = tagPattern.matcher(bodyText).replaceAll(""); //allTagCleaner.clean(bodyText);
 		String textWithoutNonAlphaNum = nonAlphaNumPattern.matcher(textWithNoTags).replaceAll("");
 		return spacePattern.matcher(textWithoutNonAlphaNum).replaceAll(" ").trim().toLowerCase();
 	}
 
-	public Collection<? extends String> getContributorIds() {
-		return contributorIds;
+	public Multimap<String, Tag> getTags() {
+		return tags;
 	}
 
 	public String getId() {
@@ -48,5 +51,17 @@ public class NormalisedArticle {
 	public DateTime getWebPublicationDate() {
 		return webPublicationDate;
 	}
+	
+	public URI getShortUrl() {
+		return shortUrl;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+"["+getId()+"]";
+	}
 }

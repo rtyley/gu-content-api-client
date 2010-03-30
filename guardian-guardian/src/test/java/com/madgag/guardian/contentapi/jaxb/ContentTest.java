@@ -2,13 +2,13 @@ package com.madgag.guardian.contentapi.jaxb;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBContext;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 
@@ -47,5 +47,11 @@ public class ContentTest {
 		assertThat(content.tags.size(), equalTo(3));
 	}
 	
-
+	@Test
+	public void shouldParseDaylightSavingsSoItDoesntFallToTheRussianRoulette() throws Exception {
+		String contentXml="<content id=\"world/2009/sep/20/pentagon-obama-nuclear-arms\" section-id=\"world\" section-name=\"World news\" web-publication-date=\"2009-09-20T23:56:00+01:00\" web-title=\"Obama faces battle with Pentagon hawks to achieve nuclear-free goal\" web-url=\"http://www.guardian.co.uk/world/2009/sep/20/pentagon-obama-nuclear-arms\" api-url=\"http://content.guardianapis.com/world/2009/sep/20/pentagon-obama-nuclear-arms\"/>";
+		Content content = (Content) JAXBContext.newInstance(Content.class).createUnmarshaller().unmarshal(new StringReader(contentXml));
+		assertThat(content.webPublicationDate, notNullValue());
+		assertThat(content.webPublicationDate.getMinuteOfHour(), is(56));
+	}
 }

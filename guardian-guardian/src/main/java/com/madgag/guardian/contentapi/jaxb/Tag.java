@@ -21,4 +21,15 @@ public class Tag {
 	@XmlAttribute(name="web-url")
 	public String webUrl;
 
+	@Override
+	public boolean equals(Object o) {
+		Tag otherTag=(Tag) o;
+		return id.equals(otherTag.id);
+	}
+	
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+	
 }

@@ -19,6 +19,8 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import twitter4j.Twitter;
+
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
@@ -27,18 +29,19 @@ import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 public class SpomIdentifierTest {
 
 	@Mock SpomMatchScorer spomMatchScorer;
+	@Mock Twitter twitter;
 	NormalisedArticleProvider articleProvider;
 	private SpomIdentifier spomIdentifier;
 	private NormalisedArticle preferredMaster, someMonkey, someOtherMonkey, anArticleWhichLooksVeryLikeTheMaster;
 
 	@Before
 	public void setUp() {
-		preferredMaster = anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("preferredMaster","",null, newHashSet("foo"));
-		someMonkey = new NormalisedArticle("someMonkey","",null, newHashSet("foo"));
-		someOtherMonkey = new NormalisedArticle("someOtherMonkey","",null, newHashSet("foo"));
-		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster","",null, newHashSet("foo"));
+		preferredMaster = anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("preferredMaster",null,null, "", null, null);
+		someMonkey = new NormalisedArticle("someMonkey",null,null, "", null, null);
+		someOtherMonkey = new NormalisedArticle("someOtherMonkey",null,null, "", null, null);
+		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster",null,null, "", null, null);
 		articleProvider=new StubArticleProvider(someMonkey,someOtherMonkey,anArticleWhichLooksVeryLikeTheMaster);
-		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider);
+		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider,twitter);
 
 		when(spomMatchScorer.getThresholdFor(any(NormalisedArticle.class))).thenReturn(0.1f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(0.666f);
@@ -67,8 +70,8 @@ public class SpomIdentifierTest {
 				"<p>If people and business are to take responsibility, you need government to act as a catalyst. High polluting products will not disappear unless government regulates. New nuclear power stations need planning policy to facilitate them. And if we act through the EU, we green the largest single market in the world. In opposition, you can sound green while embracing Euroscepticism.</p>\n" + 
 				"<p>But in government, unless you choose sides, you get found out. <blockquote><strong>We know this because he who shall not be named has been found out.</blockquote></strong> New Labour won three elections by offering real change, not just in policy but in the way we do politics. We must do so again. So let's stop feeling sorry for ourselves, enjoy a break, and then find the confidence to make our case afresh. <blockquote><strong>With a new leader. That's me.</blockquote></strong></p>";
 		
-		NormalisedArticle canonicalArticle = new NormalisedArticle("goodo",preferredMasterBodyText,null, newHashSet("foo"));
-		NormalisedArticle spomArticle = new NormalisedArticle("baddo",spomArticleBodyString,null, newHashSet("bar"));
+		NormalisedArticle canonicalArticle = new NormalisedArticle("goodo",null,null, preferredMasterBodyText, null, null);
+		NormalisedArticle spomArticle = new NormalisedArticle("baddo",null,null, spomArticleBodyString, null, null);
 		DetectedSpom detectedSpom = getSpomFor(canonicalArticle,spomArticle);
 		assertThat(detectedSpom, nullValue());
 		
@@ -102,14 +105,14 @@ public class SpomIdentifierTest {
 
 	
 	private DetectedSpom getSpomFor(String preferredMasterBodyText,	String spomArticleBodyString) {
-		NormalisedArticle canonicalArticle = new NormalisedArticle("goodie", preferredMasterBodyText, null, newHashSet("foo"));
-		NormalisedArticle spomArticle = new NormalisedArticle("baddie", spomArticleBodyString, null, newHashSet("foo"));
+		NormalisedArticle canonicalArticle = new NormalisedArticle("goodie", null, null, preferredMasterBodyText, null, null);
+		NormalisedArticle spomArticle = new NormalisedArticle("baddie", null, null, spomArticleBodyString, null, null);
 
 		return getSpomFor(canonicalArticle, spomArticle);
 	}
 
 	private DetectedSpom getSpomFor(NormalisedArticle preferredMaster,	NormalisedArticle somePossibleSpom) {
-		SpomIdentifier spomIdentifier = new SpomIdentifier(new SpomMatchScorer(new LevenshteinWithDistanceThreshold()),new StubArticleProvider(somePossibleSpom));
+		SpomIdentifier spomIdentifier = new SpomIdentifier(new SpomMatchScorer(new LevenshteinWithDistanceThreshold()),new StubArticleProvider(somePossibleSpom),twitter);
 		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom.getId()));
 	}
 	

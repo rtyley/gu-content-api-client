@@ -1,5 +1,7 @@
 package com.madgag.guardian.guardian;
 
+import static java.util.logging.Level.FINE;
+
 import java.util.logging.Logger;
 
 import net.sf.jsr107cache.Cache;
@@ -25,9 +27,11 @@ public class CachingNormalisedArticleProvider implements NormalisedArticleProvid
 		NormalisedArticle na=fetch(id);
 		if (na==null) {
 			na=contentApiNormalisedArticleProvider.normalisedArticleFor(id);
-			store(na);
+			if (na!=null)
+				store(na);
 		} else {
-			log.info("CACHE-HIT "+id);
+			if (log.isLoggable(FINE))
+				log.fine("CACHE-HIT "+id);
 		}
 		return na;
 	}
