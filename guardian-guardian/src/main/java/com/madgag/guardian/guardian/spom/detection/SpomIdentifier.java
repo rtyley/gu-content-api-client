@@ -6,6 +6,7 @@ import static java.lang.Math.round;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.WordUtils;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
@@ -57,16 +58,15 @@ public class SpomIdentifier {
 
 	private void reportStuff(NormalisedArticle preferredMaster, NormalisedArticle possibleSpom, float currentMatchScore) {
 		try {
-			twitter.updateStatus("Wu-oh : Δ="+round(currentMatchScore*100)+"% "+quickSummary(preferredMaster)+" & "+quickSummary(possibleSpom));
+            String tweetText = "Wu-oh : \u0394=" + round(currentMatchScore * 100) + "% " + quickSummary(preferredMaster) + " & " + quickSummary(possibleSpom);
+            log.info("tweetText ("+tweetText.length()+" chars): "+tweetText);
+            twitter.updateStatus(tweetText);
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private String quickSummary(NormalisedArticle na) {
-		return na.getShortUrl()+" \""+na.getTitle()+"\"";
+		return na.getShortUrl()+" \""+ WordUtils.abbreviate(na.getTitle(),35,40,"\u2026")+"\"";
 	}
-	
-	
-
 }
