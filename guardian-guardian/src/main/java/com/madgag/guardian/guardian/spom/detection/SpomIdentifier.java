@@ -67,6 +67,6 @@ public class SpomIdentifier {
 	}
 
 	private String quickSummary(NormalisedArticle na) {
-		return na.getShortUrl()+" \""+ WordUtils.abbreviate(na.getTitle(),35,40,"\u2026")+"\"";
+		return na.getShortUrl()+" \""+ WordUtils.abbreviate(na.getTitle(),30,35,"\u2026")+"\"";
 	}
 }
