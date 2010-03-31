@@ -1,5 +1,4 @@
 package com.madgag.guardian.guardian.spom.detection;
-import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.closeTo;
@@ -18,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.madgag.guardian.guardian.NormalisedArticleProvider;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -91,5 +91,13 @@ public class SpomMatchScorerTest {
 	
 	private NormalisedArticle normalisedArticleWithText(String bodyText, String... contributor) {
 		return new NormalisedArticle("myId",null, null, bodyText, null, null);
+	}
+	
+	@Test
+	public void shouldBeTheCoolest() {
+		NormalisedArticleProvider articleProvider=null;
+		NormalisedArticle pm=articleProvider.normalisedArticleFor("books/2010/jan/17/mark-kermode-only-movie-extract");
+		NormalisedArticle ps=articleProvider.normalisedArticleFor("books/2010/jan/17/mark-kermode-only-movie-extract");
+		
 	}
 }
