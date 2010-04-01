@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
@@ -112,6 +114,19 @@ public class SpomIdentifierTest {
 		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
 		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,new StubArticleProvider(somePossibleSpom),spomDetectionReporter);
 		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom.getId()));
+	}
+	
+	
+	
+	@Test
+	public void shouldBeTheCoolest() {
+		NormalisedArticleProvider articleProvider=new TestArticleProvider();
+		NormalisedArticle pm=articleProvider.normalisedArticleFor("books/2010/jan/17/mark-kermode-only-movie-extract");
+		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
+		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
+		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
+		
+		assertThat(detectedSpom.getSpom().getId(), equalTo("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
 	}
 	
 

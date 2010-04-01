@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 
