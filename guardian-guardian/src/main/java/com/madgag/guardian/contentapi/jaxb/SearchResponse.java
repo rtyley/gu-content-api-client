@@ -12,7 +12,7 @@ import com.madgag.guardian.contentapi.ApiResponse;
 import com.madgag.guardian.contentapi.SearchRequest;
 
 @XmlRootElement(name="response")
-public class SearchResponse extends ApiResponse<SearchRequest> {
+public class SearchResponse extends ApiResponse<SearchRequest,SearchResponse> {
 	
 	public static final JAXBContext JAXB_CONTEXT = JAXBUtil.createJAXBContextFor(SearchResponse.class);
 	
@@ -41,7 +41,6 @@ public class SearchResponse extends ApiResponse<SearchRequest> {
 		if (currentPage>=pages) {
 			return null;
 		}
-		// TODO - Make search request objects immutable
 		return getOriginalRequest().page(currentPage+1).execute();
 	}
 

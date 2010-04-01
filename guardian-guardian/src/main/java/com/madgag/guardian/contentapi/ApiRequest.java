@@ -10,7 +10,7 @@ import javax.xml.bind.JAXBContext;
 import com.google.common.base.Joiner;
 import com.google.common.base.Joiner.MapJoiner;
 
-public abstract class ApiRequest<T extends ApiResponse> {
+public abstract class ApiRequest<Req extends ApiRequest<Req,Resp>, Resp extends ApiResponse<Req,Resp>> {
 	protected static final Joiner COMMA_JOINER = Joiner.on(",");
 	private static final MapJoiner QUERY_PARAMS_JOINER = Joiner.on("&").withKeyValueSeparator("=");
 
@@ -26,8 +26,8 @@ public abstract class ApiRequest<T extends ApiResponse> {
 
 	public abstract JAXBContext getJaxbContextForResponse();
 	
-	public final T execute() {
-		return hitter.jojo(this);
+	public final Resp execute() {
+		return hitter.jojo((Req)this);
 	}
 	
 	public URI toUri() {

@@ -9,18 +9,19 @@ public class Hitter {
 
 	private static final Logger log = Logger.getLogger(Hitter.class.getName());
 
-	private final ApiConfig urlGenerator;
+	private final ApiConfig apiConfig;
 
 	@Inject
 	public Hitter(ApiConfig urlGenerator) {
-		this.urlGenerator = urlGenerator;
+		this.apiConfig = urlGenerator;
 	}
 
-	public <T extends ApiResponse> T jojo(ApiRequest<T> apiRequest) {
+	@SuppressWarnings("unchecked")
+	public <Req extends ApiRequest<Req, Resp>, Resp extends ApiResponse<Req, Resp>> Resp jojo(Req apiRequest) {
 		try {
 			URL url = apiRequest.toUri().toURL();
 			log.info(url.toString());
-			T response = (T) apiRequest.getJaxbContextForResponse().createUnmarshaller().unmarshal(url.openStream());
+			Resp response = (Resp) apiRequest.getJaxbContextForResponse().createUnmarshaller().unmarshal(url.openStream());
 			response.setOriginalRequest(apiRequest);
 			return response;
 		} catch (Exception e) {
@@ -29,7 +30,7 @@ public class Hitter {
 	}
 
 	public ApiConfig getConfig() {
-		return urlGenerator;
+		return apiConfig;
 	}
 
 }

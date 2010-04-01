@@ -1,14 +1,14 @@
 package com.madgag.guardian.contentapi;
 
-public abstract class ApiResponse<T extends ApiRequest<?>> {
+public abstract class ApiResponse<Req extends ApiRequest<Req,Resp>, Resp extends ApiResponse<Req,Resp>> {
 	
-	private T originalRequest;
+	private Req originalRequest;
 	
-	void setOriginalRequest(T originalRequest) {
+	void setOriginalRequest(Req originalRequest) {
 		this.originalRequest = originalRequest;
 	}
 	
-	public T getOriginalRequest() {
+	public Req getOriginalRequest() {
 		return originalRequest;
 	}
 	

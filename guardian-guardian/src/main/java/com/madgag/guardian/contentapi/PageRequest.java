@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBContext;
 
 import com.madgag.guardian.contentapi.jaxb.PageResponse;
 
-public class PageRequest extends ApiRequest<PageResponse> {
+public class PageRequest extends ApiRequest<PageRequest,PageResponse> {
 	
 	Map<String,String> moo=newHashMap();
 	private final String id;

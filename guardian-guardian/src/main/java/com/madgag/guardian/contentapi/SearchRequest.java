@@ -1,5 +1,7 @@
 package com.madgag.guardian.contentapi;
 
+import static com.google.common.collect.ImmutableMap.copyOf;
+import static com.google.common.collect.Maps.newLinkedHashMap;
 import static org.joda.time.DateTimeZone.UTC;
 
 import java.util.Map;
@@ -15,7 +17,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
-public class SearchRequest extends ApiRequest<SearchResponse> {
+public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> {
 
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(UTC);
 	private static final Joiner COMMA_JOINER = Joiner.on(",");
@@ -65,7 +67,9 @@ public class SearchRequest extends ApiRequest<SearchResponse> {
 	}
 	
 	private SearchRequest newSearchRequestWith(String key, String val) {
-		return new SearchRequest(hitter, ImmutableMap.<String,String>builder().putAll(params).put(key, val).build());
+		Map<String,String> newParams=newLinkedHashMap(params);
+		newParams.put(key, val);
+		return new SearchRequest(hitter, copyOf(newParams));
 	}
 	
 	public JAXBContext getJaxbContextForResponse() {
