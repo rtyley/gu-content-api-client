@@ -1,6 +1,5 @@
 package com.madgag.guardian.contentapi;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static org.joda.time.DateTimeZone.UTC;
 
 import java.util.Map;
@@ -16,45 +15,26 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
-public class SearchRequest implements ApiRequest<SearchResponse> {
+public class SearchRequest extends ApiRequest<SearchResponse> {
 
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(UTC);
 	private static final Joiner COMMA_JOINER = Joiner.on(",");
 	
-	private final ImmutableMap<String,String> moo;
-	
-	private final Hitter hitter;
+	private final ImmutableMap<String,String> params;
 	
 	public SearchRequest(Hitter hitter) {
-		this.hitter = hitter;
-		moo = ImmutableMap.of();
+		super(hitter);
+		params = ImmutableMap.of();
 	}
 	
-	public SearchRequest(Hitter hitter, ImmutableMap<String,String> moo) {
-		this.hitter = hitter;
-		this.moo = moo;
+	public SearchRequest(Hitter hitter, ImmutableMap<String,String> params) {
+		super(hitter);
+		this.params = params;
 	}
 
 	public SearchRequest withTags(String... tags) {
 		return newSearchRequestWith("tag", COMMA_JOINER.join(tags));
 	}
-	
-	private SearchRequest newSearchRequestWith(String key, String val) {
-		Map<String,String> m=newHashMap(moo);
-		m.put(key, val);
-		return new SearchRequest(hitter, ImmutableMap.copyOf(m));
-	}
-
-	@Override
-	public Map<String, String> getParams() {
-		return moo;
-	}
-
-	@Override
-	public String getPathPrefix() {
-		return "search";
-	}
-
 
 	public SearchRequest to(DateTime end) {
 		return newSearchRequestWith("to-date", DATE_FORMAT.print(end));
@@ -75,15 +55,7 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 	public SearchRequest during(ReadableInterval searchInterval) {
 		return from(searchInterval.getStart()).to(searchInterval.getEnd());
 	}
-
-	public SearchResponse execute() {
-		return hitter.jojo(this);
-	}
 	
-	public JAXBContext getJaxbContextForResponse() {
-		return SearchResponse.JAXB_CONTEXT;
-	}
-
 	public SearchRequest pageSize(int itemsPerPage) {
 		return newSearchRequestWith("page-size", ""+itemsPerPage);
 	}
@@ -91,6 +63,23 @@ public class SearchRequest implements ApiRequest<SearchResponse> {
 	public SearchRequest page(int page) {
 		return newSearchRequestWith("page", ""+page);
 	}
+	
+	private SearchRequest newSearchRequestWith(String key, String val) {
+		return new SearchRequest(hitter, ImmutableMap.<String,String>builder().putAll(params).put(key, val).build());
+	}
+	
+	public JAXBContext getJaxbContextForResponse() {
+		return SearchResponse.JAXB_CONTEXT;
+	}
 
+	@Override
+	protected Map<String, String> getParams() {
+		return params;
+	}
+
+	@Override
+	protected String getPathPrefix() {
+		return "search";
+	}
 
 }

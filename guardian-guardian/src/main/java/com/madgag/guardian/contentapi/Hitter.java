@@ -9,16 +9,16 @@ public class Hitter {
 
 	private static final Logger log = Logger.getLogger(Hitter.class.getName());
 
-	private final ApiRequestUrlGenerator urlGenerator;
+	private final ApiConfig urlGenerator;
 
 	@Inject
-	public Hitter(ApiRequestUrlGenerator urlGenerator) {
+	public Hitter(ApiConfig urlGenerator) {
 		this.urlGenerator = urlGenerator;
 	}
 
 	public <T extends ApiResponse> T jojo(ApiRequest<T> apiRequest) {
 		try {
-			URL url = urlGenerator.urlFor(apiRequest);
+			URL url = apiRequest.toUri().toURL();
 			log.info(url.toString());
 			T response = (T) apiRequest.getJaxbContextForResponse().createUnmarshaller().unmarshal(url.openStream());
 			response.setOriginalRequest(apiRequest);
@@ -26,6 +26,10 @@ public class Hitter {
 		} catch (Exception e) {
 			throw new ContentApiException(e);
 		}
+	}
+
+	public ApiConfig getConfig() {
+		return urlGenerator;
 	}
 
 }
