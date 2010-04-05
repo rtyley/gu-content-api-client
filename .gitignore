@@ -11,3 +11,5 @@ config.properties
 .settings
 .classpath
 .project
+*.ipr
+*.iml
