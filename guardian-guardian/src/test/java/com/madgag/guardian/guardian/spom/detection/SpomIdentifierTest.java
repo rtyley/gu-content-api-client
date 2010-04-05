@@ -1,27 +1,21 @@
 package com.madgag.guardian.guardian.spom.detection;
-import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Map;
-
+import com.madgag.guardian.guardian.NormalisedArticleProvider;
+import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.madgag.guardian.guardian.NormalisedArticleProvider;
-import com.madgag.text.util.LevenshteinWithDistanceThreshold;
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,8 +63,9 @@ public class SpomIdentifierTest {
 				"<p>If people and business are to take responsibility, you need government to act as a catalyst. High polluting products will not disappear unless government regulates. New nuclear power stations need planning policy to facilitate them. And if we act through the EU, we green the largest single market in the world. In opposition, you can sound green while embracing Euroscepticism.</p>\n" + 
 				"<p>But in government, unless you choose sides, you get found out. <blockquote><strong>We know this because he who shall not be named has been found out.</blockquote></strong> New Labour won three elections by offering real change, not just in policy but in the way we do politics. We must do so again. So let's stop feeling sorry for ourselves, enjoy a break, and then find the confidence to make our case afresh. <blockquote><strong>With a new leader. That's me.</blockquote></strong></p>";
 		
-		NormalisedArticle canonicalArticle = new NormalisedArticle("goodo",null,null, preferredMasterBodyText, null, null);
-		NormalisedArticle spomArticle = new NormalisedArticle("baddo",null,null, spomArticleBodyString, null, null);
+		
+		NormalisedArticle canonicalArticle = new NormalisedArticleBuilder().id("goodo").originalBody(preferredMasterBodyText).contributorIds("profile/fred").toArticle();
+		NormalisedArticle spomArticle = new NormalisedArticleBuilder().id("legitimate commentary on goodo").originalBody(spomArticleBodyString).contributorIds("profile/joe").toArticle();
 		DetectedSpom detectedSpom = getSpomFor(canonicalArticle,spomArticle);
 		assertThat(detectedSpom, nullValue());
 		
@@ -104,8 +99,8 @@ public class SpomIdentifierTest {
 
 	
 	private DetectedSpom getSpomFor(String preferredMasterBodyText,	String spomArticleBodyString) {
-		NormalisedArticle canonicalArticle = new NormalisedArticle("goodie", null, null, preferredMasterBodyText, null, null);
-		NormalisedArticle spomArticle = new NormalisedArticle("baddie", null, null, spomArticleBodyString, null, null);
+		NormalisedArticle canonicalArticle = new NormalisedArticleBuilder().id("goodie").originalBody(preferredMasterBodyText).toArticle();
+		NormalisedArticle spomArticle = new NormalisedArticleBuilder().id("baddie").originalBody(preferredMasterBodyText).toArticle();
 
 		return getSpomFor(canonicalArticle, spomArticle);
 	}
@@ -118,16 +113,16 @@ public class SpomIdentifierTest {
 	
 	
 	
-	@Test
-	public void shouldBeTheCoolest() {
-		NormalisedArticleProvider articleProvider=new TestArticleProvider();
-		NormalisedArticle pm=articleProvider.normalisedArticleFor("books/2010/jan/17/mark-kermode-only-movie-extract");
-		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
-		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
-		
-		assertThat(detectedSpom.getSpom().getId(), equalTo("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
-	}
+//	@Test
+//	public void shouldBeTheCoolest() {
+//		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
+//		NormalisedArticle pm=articleProvider.normalisedArticleFor("books/2010/jan/17/mark-kermode-only-movie-extract");
+//		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
+//		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
+//		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
+//		
+//		assertThat(detectedSpom.getSpom().getId(), equalTo("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
+//	}
 	
 
 	

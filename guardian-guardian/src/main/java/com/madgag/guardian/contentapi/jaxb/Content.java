@@ -1,21 +1,18 @@
 package com.madgag.guardian.contentapi.jaxb;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Multimaps.index;
-
-import java.util.List;
+import com.google.common.base.Function;
+import com.google.common.collect.Multimap;
+import org.joda.time.DateTime;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.List;
 
-import org.joda.time.DateTime;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Multimaps.index;
 
 @XmlRootElement
 public class Content {
@@ -59,9 +56,7 @@ public class Content {
 	
 	public Multimap<String, Tag> getTagsCategorisedByType() {
 		return index(tags, new Function<Tag, String>() {
-			public String apply(Tag from) {
-				return from.type;
-			}
+			public String apply(Tag from) { return from.type; }
 		});
 	}
 }

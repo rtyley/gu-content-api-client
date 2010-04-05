@@ -32,4 +32,9 @@ public class Tag {
 		return id.hashCode();
 	}
 	
+	@Override
+	public String toString() {
+		return type+":"+id;
+	}
+	
 }

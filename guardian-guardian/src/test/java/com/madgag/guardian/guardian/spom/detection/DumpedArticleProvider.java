@@ -7,13 +7,13 @@ import com.madgag.guardian.contentapi.jaxb.PageResponse;
 import com.madgag.guardian.guardian.ContentNormaliserTransform;
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
 
-public class TestArticleProvider implements NormalisedArticleProvider {
+public class DumpedArticleProvider implements NormalisedArticleProvider {
 
 	@Override
 	public NormalisedArticle normalisedArticleFor(String id) {
 		try {
 			String path="/sample-articles/"+id.replace('/', '.')+".xml";
-			InputStream resourceStream = TestArticleProvider.class.getResourceAsStream(path);
+			InputStream resourceStream = DumpedArticleProvider.class.getResourceAsStream(path);
 			if (resourceStream==null) {
 				throw new RuntimeException("Couldn't find : "+path);
 			}
