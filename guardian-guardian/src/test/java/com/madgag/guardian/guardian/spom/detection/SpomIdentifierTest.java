@@ -1,24 +1,25 @@
 package com.madgag.guardian.guardian.spom.detection;
-import com.madgag.guardian.guardian.NormalisedArticleProvider;
-import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
-import com.madgag.text.util.LevenshteinWithDistanceThreshold;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
 
-import org.hamcrest.Matchers;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Map;
-
-import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.when;
+import com.madgag.guardian.guardian.NormalisedArticleProvider;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
+import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 
 
 @RunWith(MockitoJUnitRunner.class)
