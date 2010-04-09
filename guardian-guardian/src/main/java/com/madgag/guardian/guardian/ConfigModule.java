@@ -11,8 +11,8 @@ import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-import com.madgag.guardian.guardian.spom.detection.SpomDetectionReporter;
-import com.madgag.guardian.guardian.spom.detection.TwitterReporter;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
+import com.madgag.guardian.guardian.spom.detection.reporting.TwitterReporter;
 
 public class ConfigModule extends AbstractModule {
 

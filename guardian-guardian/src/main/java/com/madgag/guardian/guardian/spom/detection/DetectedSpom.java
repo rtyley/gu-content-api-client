@@ -25,4 +25,9 @@ public class DetectedSpom {
 				+ "," + bestMatchedSpom.getId() + "]";
 	}
 
+	public MatchScore getMatchScore() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

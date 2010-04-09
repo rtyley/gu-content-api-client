@@ -1,8 +1,9 @@
-package com.madgag.guardian.guardian.spom.detection;
+package com.madgag.guardian.guardian.spom.detection.reporting;
 
 import java.util.Set;
 
 import com.google.inject.Inject;
+import com.madgag.guardian.guardian.spom.detection.SpomReport;
 
 public class DelegatingSpomReporter implements SpomDetectionReporter {
 	
@@ -14,9 +15,9 @@ public class DelegatingSpomReporter implements SpomDetectionReporter {
 	}
 	
 	@Override
-	public void reportStuff(NormalisedArticle preferredMaster, NormalisedArticle possibleSpom, float currentMatchScore) {
+	public void report(SpomReport spomReport) {
 		for (SpomDetectionReporter spomDetectionReporter : spomDetectionReporters) {
-			spomDetectionReporter.reportStuff(preferredMaster, possibleSpom, currentMatchScore);
+			spomDetectionReporter.report(spomReport);
 		}
 	}
 

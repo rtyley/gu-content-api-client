@@ -1,6 +1,9 @@
 package com.madgag.guardian.guardian.spom.detection;
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
 import com.madgag.text.util.LevenshteinWithDistanceThreshold;
+
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,9 +40,9 @@ public class SpomIdentifierTest {
 		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider, spomDetectionReporter);
 
 		when(spomMatchScorer.getThresholdFor(any(NormalisedArticle.class))).thenReturn(0.1f);
-		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(0.666f);
-		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someOtherMonkey), anyInt())).thenReturn(0.667f);
-		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(anArticleWhichLooksVeryLikeTheMaster), anyInt())).thenReturn(0.03f);
+		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(null);
+		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someOtherMonkey), anyInt())).thenReturn(null);
+		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(anArticleWhichLooksVeryLikeTheMaster), anyInt())).thenReturn(new MatchScore(null, 0.001f));
 	}
 	
 	@Test
@@ -66,8 +69,8 @@ public class SpomIdentifierTest {
 		
 		NormalisedArticle canonicalArticle = new NormalisedArticleBuilder().id("goodo").originalBody(preferredMasterBodyText).contributorIds("profile/fred").toArticle();
 		NormalisedArticle spomArticle = new NormalisedArticleBuilder().id("legitimate commentary on goodo").originalBody(spomArticleBodyString).contributorIds("profile/joe").toArticle();
-		DetectedSpom detectedSpom = getSpomFor(canonicalArticle,spomArticle);
-		assertThat(detectedSpom, nullValue());
+		SpomReport detectedSpom = getSpomFor(canonicalArticle,spomArticle);
+		assertThat(detectedSpom.hasDetectedSpoms(), is(false));
 		
 	}
 	
@@ -76,36 +79,35 @@ public class SpomIdentifierTest {
 		String preferredMasterBodyText = "<p><strong>To celebrate the launch of <a href=\"http://www.guardianbooks.co.uk/webapp/wcs/stores/servlet/ProductDisplay?storeId=10401&amp;mpe_id=34461&amp;intv_id=100001&amp;partNumber=5QII&amp;evtype=CpgnClick&amp;langId=100&amp;catalogId=25501&amp;ddkey=http:ClickInfo\">The Guardian book of football</a>, a collection of the best football writing in this paper from the last 50 years, we have asked five great names from the world of football and football journalism to nominate the best player from the UK in that time. Every day this week one of them will explain their choice, today Kevin McCarra sings Kenny Dalglish's praises. <em>You can now <a href=\"http://www.guardian.co.uk/football/poll/2008/jul/29/greatest.footballer\">vote for your favourite UK footballer of the last 50 years</a></em></strong></p><p>No other player in modern British football history has had the combination of talent, dedication, durability and football intelligence possessed by Kenny Dalglish. Sometimes I wonder if this marvellous performer can actually have been Scottish at all, so unrelated was he to the hell-raising, self-destructive virtuosos that were once a speciality north of the border.</p><p>Dalglish was never at risk of burn-out. The fire indeed was so hard to extinguish that he was 39 when, in 1990, he made his last appearance for Liverpool. Because of a dry manner, with its sardonic humour, his sheer passion for the game gets overlooked. That joy was unmistakable on the field, particularly after a left-footed curler clinched a 3-1 win for Scotland over Spain in 1984. An explosion of delight vaporised every line on his 33-year-old face and it was a schoolboy's features that filled the camera lenses.</p><p>When the need was great, Dalglish could be the individualist who came to the team's rescue. As someone who watched many of his games in the mid-1970s, it is my feeling that there were more examples of spectacular virtuosity from him in those days. He was probably reacting to the needs of the side because Celtic had by then slipped back a little from their European Cup-winning peak.</p><p>Dalglish knew what was required by each of his teams and tailored his style accordingly. In retrospect it seems silly that anyone wondered if he could adapt when he moved to Liverpool as Kevin Keegan's replacement in the summer of 1977. At the close of the ensuing campaign, he composed himself to gather a Graeme Souness pass at Wembley and dink the ball over the onrushing goalkeeper as his new club beat Bruges 1-0 to retain the European Cup.</p><p>He had the sort of career that bludgeons sceptics with a statistical barrage. There were a total of 336 goals for Celtic and Liverpool, with another 30 from 102 caps placing him alongside Denis Law as Scotland's highest-ever scorer. The most impressive aspect, though, is that despite such figures he was not a pure predator. Dalglish, instead, was really a deep-lying striker.</p><p>Lacking raw speed, his approach was founded on technique, imagination and the sturdiness to hold off defenders. He was complemented exquisitely by Ian Rush, the striker he released for so many Liverpool goals. The lasting value of Dalglish is quantified in the honours he accumulated. For reasons of space, it might be as well to confine ourselves to mentioning the six League titles and three European Cups at Anfield alone.</p><p>Familiar though defenders were with an opponent who was around for so long, few could stop the adroit Dalglish from exploiting their weaknesses. Nowadays people seem to have forgotten that the astuteness carried over into a managerial record that was formidable at both Anfield and Ewood Park. There were sneers that he had bought Blackburn the 1995 title with Jack Walker's money, but many clubs have spent heavily and failed since then. In addition, it should be recalled that Blackburn made a total profit of over £16m on the eventual sales of Alan Shearer and Chris Sutton alone.</p><p>Over a wonderful career on the field and some fruitful years in charge of teams, Dalglish showed strength of character. He not only succeeded Joe Fagan after the Heysel Stadium disaster but did so as player-manager of Liverpool, a dual role that now looks inconceivable. Dalglish remained in charge, too, during the harrowing times after the carnage at Hillsborough in 1989.</p><p>In all circumstances of sport, from the euphoric to the tragic, he was exceptional.</p><p><strong>Kenny Dalglish on YouTube</strong></p><p>A collection of his <a href=\"http://www.youtube.com/watch?v=4K9schV5wug\">best Celtic goals</a>.</p><p>A collection of his <a href=\"http://www.youtube.com/watch?v=maeBCaY41jM\">best Liverpool goals</a>.</p><p>Scoring for <a href=\"http://www.youtube.com/watch?v=blsCccZxU_M\">Scotland against England</a> at Hampden. What more could you want?</p><p><em>Tomorrow: John Barnes on Ian Rush</em></p>";
 		String spomArticleBodyString = "<p>No other player in modern British football history has had the combination of talent, dedication, durability and football intelligence possessed by Kenny Dalglish. Sometimes I wonder if this marvellous performer can actually have been Scottish at all, so unrelated was he to the hell-raising, self-destructive virtuosos that were once a speciality north of the border.</p><p>Dalglish was never at risk of burn-out. The fire indeed was so hard to extinguish that he was 39 when, in 1990, he made his last appearance for Liverpool. Because of a dry manner, with its sardonic humour, his sheer passion for the game gets overlooked. That joy was unmistakable on the field, particularly after a left-footed curler clinched a 3-1 win for Scotland over Spain in 1984. An explosion of delight vaporised every line on his 33-year-old face and it was a schoolboy's features that filled the camera lenses.</p><p>When the need was great, Dalglish could be the individualist who came to the team's rescue. As someone who watched many of his games in the mid-1970s, it is my feeling that there were more examples of spectacular virtuosity from him in those days. He was probably reacting to the needs of the side because Celtic had by then slipped back a little from their European Cup-winning peak.</p><p>Dalglish knew what was required by each of his teams and tailored his style accordingly. In retrospect it seems silly that anyone wondered if he could adapt when he moved to Liverpool as Kevin Keegan's replacement in the summer of 1977. At the close of the ensuing campaign, he composed himself to gather a Graeme Souness pass at Wembley and dink the ball over the onrushing goalkeeper as his new club beat Bruges 1-0 to retain the European Cup. </p><p>He had the sort of career that bludgeons sceptics with a statistical barrage. There were a total of 336 goals for Celtic and Liverpool, with another 30 from 102 caps placing him alongside Denis Law as Scotland's highest-ever scorer. The most impressive aspect, though, is that despite such figures he was not a pure predator. Dalglish, instead, was really a deep-lying striker.</p><p>Lacking raw speed, his approach was founded on technique, imagination and the sturdiness to hold off defenders. He was complemented exquisitely by Ian Rush, the striker he released for so many Liverpool goals. The lasting value of Dalglish is quantified in the honours he accumulated. For reasons of space, it might be as well to confine ourselves to mentioning the six League titles and three European Cups at Anfield alone.</p><p>Familiar though defenders were with an opponent who was around for so long, few could stop the adroit Dalglish from exploiting their weaknesses. Nowadays people seem to have forgotten that the astuteness carried over into a managerial record that was formidable at both Anfield and Ewood Park. There were sneers that he had bought Blackburn the 1995 title with Jack Walker's money, but many clubs have spent heavily and failed since then. In addition, it should be recalled that Blackburn made a total profit of over &pound;16m on the eventual sales of Alan Shearer and Chris Sutton alone.</p><p>Over a wonderful career on the field and some fruitful years in charge of teams, Dalglish showed strength of character. He not only succeeded Joe Fagan after the Heysel Stadium disaster but did so as player-manager of Liverpool, a dual role that now looks inconceivable. Dalglish remained in charge, too, during the harrowing times after the carnage at Hillsborough in 1989.</p><p>In all circumstances of sport, from the euphoric to the tragic, he was exceptional. </p><p><a href=\"http://www.guardianbooks.co.uk/webapp/wcs/stores/servlet/ProductDisplay?storeId=10401&amp;mpe_id=34461&amp;intv_id=100001&amp;partNumber=5QII&amp;evtype=CpgnClick&amp;langId=100&amp;catalogId=25501&amp;ddkey=http:ClickInfo\">Buy the Guardian book of Football at the Guardian bookshop</a></p>";
 		
-		DetectedSpom detectedSpom = getSpomFor(preferredMasterBodyText,
-				spomArticleBodyString);
-		assertThat(detectedSpom, not(nullValue()));
+		SpomReport spomReport = getSpomFor(preferredMasterBodyText, spomArticleBodyString);
+		assertThat(spomReport.hasDetectedSpoms(), is(true));
 	}
 
 	@Test
 	public void shouldIdentifyBestScoringMatch() throws Exception {
-		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, 
+		SpomReport spomReport = spomIdentifier.identifySpomsFor(preferredMaster, 
 				newHashSet(someMonkey.getId() ,anArticleWhichLooksVeryLikeTheMaster.getId(), someOtherMonkey.getId()));
 		
-		assertThat(detectedSpom.getSpom(), equalTo(anArticleWhichLooksVeryLikeTheMaster));
+		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItem(anArticleWhichLooksVeryLikeTheMaster));
 	}
 	
 	@Test
 	public void shouldNotIdentifySpomWorseThanThreshold() throws Exception {
-		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(someMonkey.getId(), someOtherMonkey.getId()));
+		SpomReport spomReport = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(someMonkey.getId(), someOtherMonkey.getId()));
 		
-		assertThat(detectedSpom, nullValue());
+		assertThat(spomReport.hasDetectedSpoms(), is(false));
 	}
 	
 
 	
-	private DetectedSpom getSpomFor(String preferredMasterBodyText,	String spomArticleBodyString) {
+	private SpomReport getSpomFor(String preferredMasterBodyText,	String spomArticleBodyString) {
 		NormalisedArticle canonicalArticle = new NormalisedArticleBuilder().id("goodie").originalBody(preferredMasterBodyText).toArticle();
 		NormalisedArticle spomArticle = new NormalisedArticleBuilder().id("baddie").originalBody(preferredMasterBodyText).toArticle();
 
 		return getSpomFor(canonicalArticle, spomArticle);
 	}
 
-	private DetectedSpom getSpomFor(NormalisedArticle preferredMaster,	NormalisedArticle somePossibleSpom) {
+	private SpomReport getSpomFor(NormalisedArticle preferredMaster,	NormalisedArticle somePossibleSpom) {
 		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
 		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,new StubArticleProvider(somePossibleSpom),spomDetectionReporter);
 		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom.getId()));

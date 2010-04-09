@@ -1,12 +1,15 @@
 package com.madgag.guardian.guardian.spom.detection;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.inject.Inject;
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
 
 public class SpomIdentifier {
 
@@ -26,30 +29,27 @@ public class SpomIdentifier {
 		this.spomDetectionReporter = spomDetectionReporter;
 	}
 
-	public DetectedSpom identifySpomsFor(NormalisedArticle preferredMaster,	Collection<String> listOfPossibleSpomIds) {
+	public SpomReport identifySpomsFor(NormalisedArticle preferredMaster, Collection<String> listOfPossibleSpomIds) {
 		listOfPossibleSpomIds = newHashSet(listOfPossibleSpomIds);
 		listOfPossibleSpomIds.remove(preferredMaster.getId());
-		float bestMatchScore = spomMatchScorer.getThresholdFor(preferredMaster);
-		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+bestMatchScore+" candidates:"+listOfPossibleSpomIds.size());
-		NormalisedArticle bestMatchedSpom = null;
+		float thresholdScore = spomMatchScorer.getThresholdFor(preferredMaster);
+		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+thresholdScore+" candidates:"+listOfPossibleSpomIds.size());
+		
+		Map<NormalisedArticle,MatchScore> detectedSpoms=newHashMap();
 		for (String possibleSpomId : listOfPossibleSpomIds) {
 			NormalisedArticle possibleSpom=articleProvider.normalisedArticleFor(possibleSpomId);
 			if (possibleSpom!=null) {
-				float currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, bestMatchScore); 
-				if (currentMatchScore < bestMatchScore ) {
+				MatchScore currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, thresholdScore); 
+				if (currentMatchScore!=null) {
 					log.info("Found possible! "+currentMatchScore+" "+possibleSpomId);
-					spomDetectionReporter.reportStuff(preferredMaster, possibleSpom, currentMatchScore);
-					bestMatchScore = currentMatchScore;
-					bestMatchedSpom = possibleSpom;
+					detectedSpoms.put(possibleSpom, currentMatchScore);
 				}
 			}
 		}
-		if (bestMatchedSpom==null) {
-			return null;
-		}
-		DetectedSpom detectedSpom = new DetectedSpom(preferredMaster, bestMatchedSpom);
-		log.info("Found SPOM! "+detectedSpom);
-		return detectedSpom;
+		
+		SpomReport spomReport = new SpomReport(preferredMaster,detectedSpoms);
+		spomDetectionReporter.report(spomReport);
+		return spomReport;
 	}
 
 }

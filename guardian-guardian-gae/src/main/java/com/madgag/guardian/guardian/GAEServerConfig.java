@@ -4,8 +4,8 @@ import static com.google.inject.multibindings.Multibinder.newSetBinder;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
-import com.madgag.guardian.guardian.spom.detection.SpomDetectionReporter;
-import com.madgag.guardian.guardian.spom.detection.TwitterReporter;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
+import com.madgag.guardian.guardian.spom.detection.reporting.TwitterReporter;
 
 public class GAEServerConfig extends AbstractModule {
 

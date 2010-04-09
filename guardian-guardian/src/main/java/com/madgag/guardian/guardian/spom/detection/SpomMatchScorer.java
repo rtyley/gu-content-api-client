@@ -2,6 +2,8 @@ package com.madgag.guardian.guardian.spom.detection;
 
 import static com.google.common.collect.Sets.intersection;
 import static com.google.common.collect.Sets.newHashSet;
+import static com.madgag.guardian.guardian.spom.detection.MatchScore.DISQUALIFIED;
+import static com.madgag.guardian.guardian.spom.detection.MatchScore.OUTSIDE_THRESHOLD;
 import static java.lang.Math.expm1;
 import static java.lang.Math.round;
 import static java.util.logging.Level.FINE;
@@ -34,7 +36,7 @@ public class SpomMatchScorer {
 		this.levenshteinWithDistanceThreshold = levenshteinWithDistanceThreshold;
 	}
 
-	public float getMatchScore(NormalisedArticle preferredMaster,
+	public MatchScore getMatchScore(NormalisedArticle preferredMaster,
 			NormalisedArticle possibleSpom, float minimumSuccessfulScore) {
 		if (log.isLoggable(FINE)) {
 			log.fine("Comparing "+preferredMaster.getId()+" & "+possibleSpom.getId());
@@ -47,7 +49,7 @@ public class SpomMatchScorer {
 		if (!commonSeries.isEmpty()) {
 			if (pubTimeDelta.isLongerThan(standardHours(12)) && preferredMaster.getNormalisedBodyText().length()<2000) {
 				// let off boring repeated series...
-				return Float.MAX_VALUE;
+				return null;
 			}
 		}
 		
@@ -66,10 +68,9 @@ public class SpomMatchScorer {
 				preferredMasterBodyText, possibleSpomBodyText,
 				requiredLevenshteinDistanceThreshold);
 		if (levenDistance > requiredLevenshteinDistanceThreshold) {
-			return Float.MAX_VALUE;
+			return null;
 		}
-		return ((float) levenDistance / preferredMasterBodyText.length())
-				+ contributorWeighting;
+		return new MatchScore(new NormalisedLevenshteinDistance(levenDistance, preferredMasterBodyText.length()), contributorWeighting);
 	}
 
 	private Set<Tag> commonTags(String tagType,NormalisedArticle preferredMaster, NormalisedArticle possibleSpom) {

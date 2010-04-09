@@ -2,7 +2,8 @@ package com.madgag.guardian.guardian;
 
 import com.google.inject.Inject;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
-import com.madgag.guardian.guardian.spom.detection.SpomDetectionReporter;
+import com.madgag.guardian.guardian.spom.detection.SpomReport;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
 
 public class ContentSavingReporter implements SpomDetectionReporter {
 
@@ -14,9 +15,17 @@ public class ContentSavingReporter implements SpomDetectionReporter {
 	}
 	
 	@Override
-	public void reportStuff(NormalisedArticle preferredMaster, NormalisedArticle possibleSpom, float currentMatchScore) {
-		contentDumper.dumpContentWithId(preferredMaster.getId());
-		contentDumper.dumpContentWithId(possibleSpom.getId());
+	public void report(SpomReport spomReport) {
+		if (spomReport.hasDetectedSpoms()) {			
+			dumpArticlesFrom(spomReport);
+		}
+	}
+
+	private void dumpArticlesFrom(SpomReport spomReport) {
+		contentDumper.dumpContentWithId(spomReport.getTargetArticle().getId());
+		for (NormalisedArticle spom : spomReport.getSpomsWithMatchScores().keySet()) {			
+			contentDumper.dumpContentWithId(spom.getId());
+		}
 	}
 
 }

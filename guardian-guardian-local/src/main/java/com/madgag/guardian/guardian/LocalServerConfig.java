@@ -9,8 +9,8 @@ import net.sf.jsr107cache.Cache;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
-import com.madgag.guardian.guardian.spom.detection.SpomDetectionReporter;
-import com.madgag.guardian.guardian.spom.detection.TwitterReporter;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
+import com.madgag.guardian.guardian.spom.detection.reporting.TwitterReporter;
 
 public class LocalServerConfig extends AbstractModule {
 
