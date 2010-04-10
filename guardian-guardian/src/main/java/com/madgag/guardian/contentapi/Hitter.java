@@ -1,5 +1,6 @@
 package com.madgag.guardian.contentapi;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.logging.Logger;
 
@@ -18,14 +19,15 @@ public class Hitter {
 
 	@SuppressWarnings("unchecked")
 	public <Req extends ApiRequest<Req, Resp>, Resp extends ApiResponse<Req, Resp>> Resp jojo(Req apiRequest) {
+		URI uri = apiRequest.toUri();
 		try {
-			URL url = apiRequest.toUri().toURL();
+			URL url = uri.toURL();
 			log.info(url.toString());
 			Resp response = (Resp) apiRequest.getJaxbContextForResponse().createUnmarshaller().unmarshal(url.openStream());
 			response.setOriginalRequest(apiRequest);
 			return response;
 		} catch (Exception e) {
-			throw new ContentApiException(e);
+			throw new ContentApiException("Error reading from "+uri,e);
 		}
 	}
 

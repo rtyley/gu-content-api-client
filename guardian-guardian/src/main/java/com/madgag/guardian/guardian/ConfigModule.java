@@ -11,12 +11,15 @@ import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import com.madgag.guardian.guardian.spom.detection.reporting.DelegatingSpomReporter;
+import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
 
 public class ConfigModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		loadProperties(binder());
+		binder().bind(SpomDetectionReporter.class).to(DelegatingSpomReporter.class);
 		binder().bind(NormalisedArticleProvider.class).to(CachingNormalisedArticleProvider.class);
 	}
 

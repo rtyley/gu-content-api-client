@@ -7,4 +7,8 @@ public class ContentApiException extends RuntimeException {
 		super(e);
 	}
 
+	public ContentApiException(String string, Throwable e) {
+		super(string, e);
+	}
+
 }

@@ -24,7 +24,7 @@ public class LocalServerConfig extends AbstractModule {
 	
 	@Provides
 	public File provideDumpDir() {
-		return new File(System.getProperty("java.tmp.dir"));
+		return new File(System.getProperty("java.io.tmpdir"));
 	}
 
 }

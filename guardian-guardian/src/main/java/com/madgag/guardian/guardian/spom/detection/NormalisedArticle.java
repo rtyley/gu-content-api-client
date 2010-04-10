@@ -1,5 +1,6 @@
 package com.madgag.guardian.guardian.spom.detection;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.regex.Pattern;
 
@@ -8,7 +9,7 @@ import org.joda.time.DateTime;
 import com.google.common.collect.Multimap;
 import com.madgag.guardian.contentapi.jaxb.Tag;
 
-public class NormalisedArticle {
+public class NormalisedArticle implements Serializable {
 	private static final Pattern spacePattern = Pattern.compile("\\s{2,}");
 	private static final Pattern nonAlphaNumPattern = Pattern.compile("[^\\s\\p{Alnum}]*");
 	private static final Pattern tagPattern = Pattern.compile("<.+?>");

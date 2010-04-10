@@ -7,5 +7,6 @@ public class MyServletModule extends ServletModule {
 	protected void configureServlets() {
 		serve("/search").with(MyServlet.class);
 		serve("/worker/bulkSearch").with(BulkSearchSpaceGenerationTaskServlet.class);
+		serve("/worker/identifySpoms").with(SpomIdentificationTaskServlet.class);
 	}
 }

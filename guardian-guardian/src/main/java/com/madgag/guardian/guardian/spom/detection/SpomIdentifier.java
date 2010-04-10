@@ -29,6 +29,10 @@ public class SpomIdentifier {
 		this.spomDetectionReporter = spomDetectionReporter;
 	}
 
+	public SpomReport identifySpomsFor(String preferredMasterId, Collection<String> listOfPossibleSpomIds) {
+		return identifySpomsFor(articleProvider.normalisedArticleFor(preferredMasterId), listOfPossibleSpomIds);
+	}
+	
 	public SpomReport identifySpomsFor(NormalisedArticle preferredMaster, Collection<String> listOfPossibleSpomIds) {
 		listOfPossibleSpomIds = newHashSet(listOfPossibleSpomIds);
 		listOfPossibleSpomIds.remove(preferredMaster.getId());

@@ -24,5 +24,10 @@ public class SpomReport {
 	public boolean hasDetectedSpoms() {
 		return !detectedSpoms.isEmpty();
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+"["+targetArticle+" - "+detectedSpoms+"]";
+	}
 
 }

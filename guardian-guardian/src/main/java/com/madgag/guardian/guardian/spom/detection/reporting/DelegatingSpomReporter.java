@@ -5,6 +5,7 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.madgag.guardian.guardian.spom.detection.SpomReport;
 
+
 public class DelegatingSpomReporter implements SpomDetectionReporter {
 	
 	private final Set<SpomDetectionReporter> spomDetectionReporters;
