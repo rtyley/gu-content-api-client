@@ -9,6 +9,7 @@ public class MyGuiceServletContextListener extends GuiceServletContextListener {
 	@Override
 	protected Injector getInjector() {
 		return Guice.createInjector(
+				new ConfigModule(),
 				new MyServletModule(),
 				new GAEServerConfig());
 	}
