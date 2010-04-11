@@ -12,7 +12,7 @@ import org.joda.time.Interval;
 import org.joda.time.Period;
 
 import com.google.inject.Inject;
-import com.madgag.guardian.contentapi.ContentApiClient;
+import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
@@ -20,25 +20,26 @@ import com.madgag.guardian.guardian.spom.detection.ValidArticleFilter;
 
 public class BulkSearchSpaceGenerator {
 	
-	private final ContentApiClient apiClient;
+	private final SearchRequest articleSearch;
 	private final CachingNormalisedArticleProvider cachingNormalisedArticleProvider;
 	private final ValidArticleFilter validArticleFilter;
 
 	@Inject
-	public BulkSearchSpaceGenerator(ContentApiClient apiClient,
+	public BulkSearchSpaceGenerator(PopulatedArticleSearchRequestProvider articleSearchRequestProvider,
 			CachingNormalisedArticleProvider cachingNormalisedArticleProvider,
 			ValidArticleFilter validArticleFilter) {
-		this.apiClient = apiClient;
+		articleSearch=articleSearchRequestProvider.articleSearch();
 		this.cachingNormalisedArticleProvider = cachingNormalisedArticleProvider;
 		this.validArticleFilter = validArticleFilter;
 	}
 	
 	public SearchSpace getSearchSpaceCovering(Interval interval) {
 		Period bufferPeriod = days(2);
-		SearchResponse boo = apiClient.search().withTags("type/article")
-				.showFields("body", "short-url").showTags("all").from(
-						interval.getStart().minus(bufferPeriod)).to(
-						interval.getEnd()).pageSize(50).execute();
+		SearchResponse boo = articleSearch
+						.from(interval.getStart().minus(bufferPeriod))
+						.to(interval.getEnd())
+						.pageSize(50)
+						.execute();
 		List<NormalisedArticle> articlesToCheck = newArrayList();
 		SortedMap<DateTime, String> possibleSpomIds = newTreeMap();
 		while (boo != null) {

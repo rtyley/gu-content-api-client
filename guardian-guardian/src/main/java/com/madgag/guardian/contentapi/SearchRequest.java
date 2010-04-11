@@ -17,7 +17,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 
-public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> {
+public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> implements ContentRequest<SearchRequest> {
 
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(UTC);
 	private static final Joiner COMMA_JOINER = Joiner.on(",");

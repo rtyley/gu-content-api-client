@@ -1,10 +1,12 @@
 package com.madgag.guardian.contentapi.jaxb;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Tag {
+public class Tag implements Serializable {
 
 	@XmlAttribute
 	public String type;

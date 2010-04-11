@@ -8,11 +8,10 @@ import javax.xml.bind.JAXBContext;
 
 import com.madgag.guardian.contentapi.jaxb.PageResponse;
 
-public class PageRequest extends ApiRequest<PageRequest,PageResponse> {
+public class PageRequest extends ApiRequest<PageRequest,PageResponse> implements ContentRequest<PageRequest> {
 	
 	Map<String,String> moo=newHashMap();
 	private final String id;
-	
 
 	public PageRequest(String id, Hitter hitter) {
 		super(hitter);
@@ -33,8 +32,16 @@ public class PageRequest extends ApiRequest<PageRequest,PageResponse> {
 		moo.put("show-fields", COMMA_JOINER.join(fields));
 		return this;
 	}
+	
+	@Override
+	public PageRequest showTags(String... tagTypes) {
+		moo.put("show-tags", COMMA_JOINER.join(tagTypes));
+		return this;
+	}
 
 	public JAXBContext getJaxbContextForResponse() {
 		return PageResponse.JAXB_CONTEXT;
 	}
+
+
 }

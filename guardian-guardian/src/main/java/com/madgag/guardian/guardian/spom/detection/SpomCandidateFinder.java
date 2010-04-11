@@ -11,33 +11,32 @@ import javax.xml.bind.JAXBException;
 import org.joda.time.DateTime;
 
 import com.google.inject.Inject;
-import com.madgag.guardian.contentapi.ContentApiClient;
+import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 import com.madgag.guardian.guardian.CachingNormalisedArticleProvider;
 import com.madgag.guardian.guardian.ContentNormaliserTransform;
+import com.madgag.guardian.guardian.PopulatedArticleSearchRequestProvider;
 
 public class SpomCandidateFinder {
 	
 	private static final Logger log = Logger.getLogger(SpomCandidateFinder.class.getName());
-	
-	private final ContentApiClient apiClient;
+
+	private final SearchRequest searchRequestForArticlesWithPopulatedFields;
 
 	private final CachingNormalisedArticleProvider cachingNormalisedArticleProvider; // this is badness, right?
 
 	@Inject
-	public SpomCandidateFinder(ContentApiClient apiClient, CachingNormalisedArticleProvider cachingNormalisedArticleProvider) {
-		this.apiClient = apiClient;
+	public SpomCandidateFinder(PopulatedArticleSearchRequestProvider articleSearchRequestProvider, CachingNormalisedArticleProvider cachingNormalisedArticleProvider) {
+		searchRequestForArticlesWithPopulatedFields = articleSearchRequestProvider.articleSearch();
 		this.cachingNormalisedArticleProvider = cachingNormalisedArticleProvider;
 	}
 	
 	public Set<String> findSpomCandidatesFor(NormalisedArticle preferredArticle) throws IOException, JAXBException {
 		DateTime dateTime = preferredArticle.getWebPublicationDate();
-		
-		SearchResponse boo = apiClient.search()
+
+		SearchResponse boo = searchRequestForArticlesWithPopulatedFields
 			.from(dateTime.minusDays(1)).to(dateTime.plusDays(1))
-			.withTags("type/article")
-			.showFields("body")
 			.pageSize(50)
 			.execute();
 		Set<String> spomCandidateSet = newHashSetWithExpectedSize(boo.total);
