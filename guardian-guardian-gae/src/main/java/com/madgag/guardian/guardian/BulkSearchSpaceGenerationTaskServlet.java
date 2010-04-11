@@ -1,6 +1,6 @@
 package com.madgag.guardian.guardian;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.url;
+import static com.newatlanta.appengine.taskqueue.Deferred.defer;
 
 import java.io.IOException;
 
@@ -11,9 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Interval;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.repackaged.com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
@@ -22,7 +19,6 @@ import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 @Singleton
 public class BulkSearchSpaceGenerationTaskServlet extends HttpServlet {
 
-	private static final Joiner COMMA_JOINER = Joiner.on(',');
 	private final BulkSearchSpaceGenerator bulkSearchSpaceGenerator;
 	
 	@Inject
@@ -36,11 +32,10 @@ public class BulkSearchSpaceGenerationTaskServlet extends HttpServlet {
 		String intervalString=req.getParameter("interval");
 		Interval interval = new Interval(intervalString);
 		SearchSpace searchSpace = bulkSearchSpaceGenerator.getSearchSpaceCovering(interval);
-		Queue queue = QueueFactory.getDefaultQueue();
 		for (NormalisedArticle target : searchSpace.getArticlesToCheck()) {
-			String possibleSpomIdsString = COMMA_JOINER.join(searchSpace.possibleSpomIdsFor(target));
-			queue.add(url("/worker/identifySpoms").param("targetId", target.getId()).param("possibleSpomIds", possibleSpomIdsString));
+			defer(new ArticleSpomSearch(target.getId(),searchSpace.possibleSpomIdsFor(target)));
 		}
+		resp.getWriter().write("Will check "+searchSpace.getArticlesToCheck().size()+" articles");
 	}
 
 }

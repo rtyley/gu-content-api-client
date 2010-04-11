@@ -6,6 +6,7 @@ import static org.joda.time.Period.days;
 
 import java.util.List;
 import java.util.SortedMap;
+import java.util.logging.Logger;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -16,10 +17,12 @@ import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
+import com.madgag.guardian.guardian.spom.detection.SpomCandidateFinder;
 import com.madgag.guardian.guardian.spom.detection.ValidArticleFilter;
 
 public class BulkSearchSpaceGenerator {
-	
+	private static final Logger log = Logger.getLogger(BulkSearchSpaceGenerator.class.getName());
+
 	private final SearchRequest articleSearch;
 	private final CachingNormalisedArticleProvider cachingNormalisedArticleProvider;
 	private final ValidArticleFilter validArticleFilter;
@@ -34,6 +37,7 @@ public class BulkSearchSpaceGenerator {
 	}
 	
 	public SearchSpace getSearchSpaceCovering(Interval interval) {
+		log.info("Searcing "+interval);
 		Period bufferPeriod = days(2);
 		SearchResponse boo = articleSearch
 						.from(interval.getStart().minus(bufferPeriod))
