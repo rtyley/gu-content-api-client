@@ -1,9 +1,12 @@
 package com.madgag.guardian.guardian;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.partition;
 import static com.newatlanta.appengine.taskqueue.Deferred.defer;
 import static org.joda.time.Period.days;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedMap;
 
 import org.joda.time.DateTime;
@@ -41,7 +44,9 @@ public class IncrementalBulkSearchProcessor {
 				searchSpaceArticleIds.put(webPubDate, na.getId());
 				if (targetArticleInterval.contains(webPubDate)) {
 					Collection<String> possibleSpomIds = searchSpaceArticleIds.subMap(webPubDate.minus(days(2)), webPubDate).values();
-					defer(new ArticleSpomSearch(na.getId(), possibleSpomIds));
+					for (List<String> chunkIds : partition(newArrayList(possibleSpomIds), 50)) {						
+						defer(new ArticleSpomSearch(na.getId(), chunkIds),"deferredArticleSpomSearch");
+					}
 				}
 			}
 		}

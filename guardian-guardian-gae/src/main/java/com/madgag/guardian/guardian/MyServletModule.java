@@ -7,7 +7,7 @@ public class MyServletModule extends ServletModule {
 	@Override
 	protected void configureServlets() {
 		serve("/search").with(MyServlet.class);
-		serve("/_ah/queue/deferred").with(Deferred.class);
+		serve("/_ah/queue/deferred*").with(Deferred.class);
 		bind(Deferred.class).asEagerSingleton();
 		
 

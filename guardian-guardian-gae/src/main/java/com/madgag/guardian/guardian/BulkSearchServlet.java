@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Interval;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @SuppressWarnings("serial")
