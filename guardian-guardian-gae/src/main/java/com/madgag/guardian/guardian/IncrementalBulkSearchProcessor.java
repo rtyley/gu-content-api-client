@@ -44,7 +44,7 @@ public class IncrementalBulkSearchProcessor {
 				searchSpaceArticleIds.put(webPubDate, na.getId());
 				if (targetArticleInterval.contains(webPubDate)) {
 					Collection<String> possibleSpomIds = searchSpaceArticleIds.subMap(webPubDate.minus(days(2)), webPubDate).values();
-					for (List<String> chunkIds : partition(newArrayList(possibleSpomIds), 50)) {						
+					for (List<String> chunkIds : partition(newArrayList(possibleSpomIds), 60)) {						
 						defer(new ArticleSpomSearch(na.getId(), chunkIds),"deferredArticleSpomSearch");
 					}
 				}

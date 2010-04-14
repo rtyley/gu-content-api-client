@@ -9,6 +9,7 @@
   </queue>
     <queue>
     <name>deferredArticleSpomSearch</name>
-    <rate>5/s</rate>
+    <rate>20/s</rate>
+    <bucket-size>20</bucket-size>
   </queue>
 </queue-entries>
