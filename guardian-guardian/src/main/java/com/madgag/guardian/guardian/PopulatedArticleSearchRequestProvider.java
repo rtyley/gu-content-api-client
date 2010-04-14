@@ -16,7 +16,7 @@ public class PopulatedArticleSearchRequestProvider {
 	}
 	
 	public SearchRequest articleSearch() {
-		return showRequiredData(apiClient.search().withTags("type/article"));
+		return showRequiredData(apiClient.search()).withTags("type/article").orderBy("oldest");
 	}
 	
 	public PageRequest articleWithId(String id) {

@@ -2,8 +2,6 @@ package com.madgag.guardian.guardian.spom.detection;
 
 import static com.google.common.collect.Sets.intersection;
 import static com.google.common.collect.Sets.newHashSet;
-import static com.madgag.guardian.guardian.spom.detection.MatchScore.DISQUALIFIED;
-import static com.madgag.guardian.guardian.spom.detection.MatchScore.OUTSIDE_THRESHOLD;
 import static java.lang.Math.expm1;
 import static java.lang.Math.round;
 import static java.util.logging.Level.FINE;

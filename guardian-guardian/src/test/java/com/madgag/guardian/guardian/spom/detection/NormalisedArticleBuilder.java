@@ -1,10 +1,11 @@
 package com.madgag.guardian.guardian.spom.detection;
 
+import org.joda.time.DateTime;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.madgag.guardian.contentapi.jaxb.Tag;
 import com.madgag.guardian.contentapi.jaxb.TagBuilder;
-import org.joda.time.DateTime;
 
 public class NormalisedArticleBuilder {
 

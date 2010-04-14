@@ -66,11 +66,20 @@ public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> impl
 		return newSearchRequestWith("page", ""+page);
 	}
 	
+	//order-by=oldest
+	public SearchRequest orderBy(String order) {
+		return newSearchRequestWith("order-by", order);
+	}
+
+	
 	private SearchRequest newSearchRequestWith(String key, String val) {
 		Map<String,String> newParams=newLinkedHashMap(params);
 		newParams.put(key, val);
 		return new SearchRequest(hitter, copyOf(newParams));
 	}
+	
+	
+	
 	
 	public JAXBContext getJaxbContextForResponse() {
 		return SearchResponse.JAXB_CONTEXT;

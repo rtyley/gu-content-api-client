@@ -11,7 +11,7 @@ public class MyServletModule extends ServletModule {
 		bind(Deferred.class).asEagerSingleton();
 		
 
-		serve("/worker/bulkSearch").with(BulkSearchSpaceGenerationTaskServlet.class);
+		serve("/worker/bulkSearch").with(BulkSearchServlet.class);
 //		serve("/worker/identifySpoms").with(SpomIdentificationTaskServlet.class);
 	}
 }

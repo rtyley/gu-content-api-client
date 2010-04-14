@@ -17,7 +17,6 @@ import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
-import com.madgag.guardian.guardian.spom.detection.SpomCandidateFinder;
 import com.madgag.guardian.guardian.spom.detection.ValidArticleFilter;
 
 public class BulkSearchSpaceGenerator {
@@ -48,8 +47,7 @@ public class BulkSearchSpaceGenerator {
 		SortedMap<DateTime, String> possibleSpomIds = newTreeMap();
 		while (boo != null) {
 			for (Content content : boo.contents) {
-				NormalisedArticle na = new ContentNormaliserTransform()
-						.apply(content);
+				NormalisedArticle na = new ContentNormaliserTransform().apply(content);
 				if (na != null) {
 					cachingNormalisedArticleProvider.store(na);
 					if (validArticleFilter.apply(na)) {

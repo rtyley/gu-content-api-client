@@ -1,18 +1,20 @@
 package com.madgag.guardian.contentapi.jaxb;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Multimap;
-import org.joda.time.DateTime;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Multimaps.index;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Multimaps.index;
+import org.joda.time.DateTime;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Multimap;
 
 @XmlRootElement
 public class Content {
