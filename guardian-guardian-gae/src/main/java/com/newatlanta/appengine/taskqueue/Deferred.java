@@ -520,7 +520,8 @@ public class Deferred extends HttpServlet {
     }
     
     private static boolean isDevelopment() {
-        return ( SystemProperty.environment.value() ==
-                    SystemProperty.Environment.Value.Development );
+    	return true;
+//        return ( SystemProperty.environment.value() ==
+//                    SystemProperty.Environment.Value.Development );
     }
 }
