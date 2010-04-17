@@ -5,9 +5,8 @@ import static com.google.common.collect.Lists.partition;
 import static com.newatlanta.appengine.taskqueue.Deferred.defer;
 import static org.joda.time.Period.days;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.SortedMap;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -35,20 +34,26 @@ public class IncrementalBulkSearchProcessor {
 		this.validArticleFilter = validArticleFilter;
 	}
 
-	void process(Content content, Interval targetArticleInterval, SortedMap<DateTime, String> searchSpaceArticleIds) {
+	void process(Content content, Interval targetArticleInterval, ArticleChronology articleChronology) {
 		NormalisedArticle na = new ContentNormaliserTransform().apply(content);
 		if (na != null) {
 			cachingNormalisedArticleProvider.store(na);
 			if (validArticleFilter.apply(na)) {
-				DateTime webPubDate = na.getWebPublicationDate();
-				searchSpaceArticleIds.put(webPubDate, na.getId());
-				if (targetArticleInterval.contains(webPubDate)) {
-					Collection<String> possibleSpomIds = searchSpaceArticleIds.subMap(webPubDate.minus(days(2)), webPubDate).values();
-					for (List<String> chunkIds : partition(newArrayList(possibleSpomIds), 60)) {						
-						defer(new ArticleSpomSearch(na.getId(), chunkIds),"deferredArticleSpomSearch");
-					}
+				articleChronology.recordPublicationDateOf(na);
+				if (targetArticleInterval.contains(na.getWebPublicationDate())) {
+					deferSpomSearchFor(na, articleChronology);
 				}
 			}
+		}
+	}
+
+	private void deferSpomSearchFor(NormalisedArticle na,
+			ArticleChronology articleChronology) {
+		DateTime webPubDate = na.getWebPublicationDate();
+		Interval interval = new Interval(webPubDate.minus(days(2)), webPubDate);
+		Set<String> spomCandidates = articleChronology.contentIdsFor(interval);
+		for (List<String> chunkIds : partition(newArrayList(spomCandidates), 50)) {						
+			defer(new ArticleSpomSearch(na.getId(), chunkIds),"deferredArticleSpomSearch");
 		}
 	}
 

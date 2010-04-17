@@ -38,10 +38,14 @@ public class SearchResponse extends ApiResponse<SearchRequest,SearchResponse> {
 	public List<Content> contents;
 
 	public SearchResponse next() {
-		if (currentPage>=pages) {
+		if (!hasNext()) {
 			return null;
 		}
 		return getOriginalRequest().page(currentPage+1).execute();
+	}
+
+	public boolean hasNext() {
+		return currentPage<pages;
 	}
 
 

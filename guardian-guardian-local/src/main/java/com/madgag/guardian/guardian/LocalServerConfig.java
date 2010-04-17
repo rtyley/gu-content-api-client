@@ -19,7 +19,7 @@ public class LocalServerConfig extends AbstractModule {
 		binder().bind(Cache.class).toProvider(FunkyCacheProvider.class).asEagerSingleton();
 		Multibinder<SpomDetectionReporter> reporterBinder = newSetBinder(binder(), SpomDetectionReporter.class);
 		reporterBinder.addBinding().to(ContentSavingReporter.class);
-		reporterBinder.addBinding().to(TwitterReporter.class);
+		//reporterBinder.addBinding().to(TwitterReporter.class);
 	}
 	
 	@Provides

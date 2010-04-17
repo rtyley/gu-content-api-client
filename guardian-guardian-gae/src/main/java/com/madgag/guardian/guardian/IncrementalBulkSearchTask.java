@@ -5,15 +5,12 @@ import static com.madgag.guardian.guardian.PageProcessingProgress.noContentYetPr
 import static com.newatlanta.appengine.taskqueue.Deferred.defer;
 
 import java.io.IOException;
-import java.util.SortedMap;
 
 import javax.servlet.ServletException;
 
-import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.google.apphosting.api.DeadlineExceededException;
-import com.google.common.collect.Maps;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 import com.newatlanta.appengine.taskqueue.Deferred.Deferrable;
@@ -22,7 +19,7 @@ public class IncrementalBulkSearchTask implements Deferrable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private final SortedMap<DateTime, String> searchSpaceArticleIds;
+	private final ArticleChronology articleChronology;
 	private final Interval targetArticleInterval;
 	
 	private PageProcessingProgress pageProcessingProgress;
@@ -30,14 +27,14 @@ public class IncrementalBulkSearchTask implements Deferrable {
 	IncrementalBulkSearchTask(
 			Interval targetArticleInterval,
 			PageProcessingProgress pageProcessingProgress,
-			SortedMap<DateTime, String> searchSpaceArticleIds) {
-		this.searchSpaceArticleIds = searchSpaceArticleIds;
+			ArticleChronology articleChronology) {
+		this.articleChronology = articleChronology;
 		this.targetArticleInterval = targetArticleInterval;
 		this.pageProcessingProgress = pageProcessingProgress;
 	}
 
 	public IncrementalBulkSearchTask(Interval targetArticleInterval) {
-		this(targetArticleInterval,noContentYetProcessedForPage(1),Maps.<DateTime, String>newTreeMap());
+		this(targetArticleInterval,noContentYetProcessedForPage(1),new ArticleChronology());
 	}
 
 	@Override
@@ -45,23 +42,31 @@ public class IncrementalBulkSearchTask implements Deferrable {
 		try {
 			processAsMuchAsPossible();
 		} catch (DeadlineExceededException e) {
-			defer(new IncrementalBulkSearchTask(targetArticleInterval,pageProcessingProgress,searchSpaceArticleIds));
+			deferForABrighterTomorrow();
 		}
+	}
+
+	private void deferForABrighterTomorrow() {
+		defer(new IncrementalBulkSearchTask(targetArticleInterval,pageProcessingProgress,articleChronology));
 	}
 
 	private void processAsMuchAsPossible() {
 		IncrementalBulkSearchProcessor processor = INJECTOR.getInstance(IncrementalBulkSearchProcessor.class);
 		SearchResponse searchResultsPage = processor.createSearchRequestFor(targetArticleInterval).page(pageProcessingProgress.getPage()).execute();
-		while (searchResultsPage != null) {
+		for (int batchNum=0; batchNum<2; ++batchNum) {
 			for (Content content : searchResultsPage.contents) {
 				if (pageProcessingProgress.hasNotYetProcessed(content.id)) {
-					processor.process(content,targetArticleInterval,searchSpaceArticleIds);
+					processor.process(content,targetArticleInterval,articleChronology);
 					pageProcessingProgress = pageProcessingProgress.updatedWith(content.id);
 				}
 			}
 			pageProcessingProgress = noContentYetProcessedForPage(searchResultsPage.currentPage+1);
+			if (!searchResultsPage.hasNext()) {
+				return; // WE ARE FINISHED!
+			}
 			searchResultsPage = searchResultsPage.next();
 		}
+		deferForABrighterTomorrow();
 	}
 	
 }

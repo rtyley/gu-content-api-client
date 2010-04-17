@@ -1,14 +1,11 @@
 package com.madgag.guardian.guardian;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newTreeMap;
 import static org.joda.time.Period.days;
 
 import java.util.List;
-import java.util.SortedMap;
 import java.util.logging.Logger;
 
-import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
@@ -44,14 +41,14 @@ public class BulkSearchSpaceGenerator {
 						.pageSize(50)
 						.execute();
 		List<NormalisedArticle> articlesToCheck = newArrayList();
-		SortedMap<DateTime, String> possibleSpomIds = newTreeMap();
+		ArticleChronology articleChronology = new ArticleChronology();
 		while (boo != null) {
 			for (Content content : boo.contents) {
 				NormalisedArticle na = new ContentNormaliserTransform().apply(content);
 				if (na != null) {
 					cachingNormalisedArticleProvider.store(na);
 					if (validArticleFilter.apply(na)) {
-						possibleSpomIds.put(na.getWebPublicationDate(), na.getId());
+						articleChronology.recordPublicationDateOf(na);
 						if (interval.contains(content.webPublicationDate)) {
 							articlesToCheck.add(na);
 						}
@@ -60,7 +57,7 @@ public class BulkSearchSpaceGenerator {
 			}
 			boo = boo.next();
 		}
-		return new SearchSpace(articlesToCheck, possibleSpomIds, bufferPeriod);
+		return new SearchSpace(articlesToCheck, articleChronology, bufferPeriod);
 	}
 
 }
