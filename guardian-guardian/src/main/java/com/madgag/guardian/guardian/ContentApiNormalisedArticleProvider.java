@@ -17,7 +17,7 @@ public class ContentApiNormalisedArticleProvider implements NormalisedArticlePro
 	
 	@Override
 	public NormalisedArticle normalisedArticleFor(String id) {
-		PageResponse pageResponse=searchRequestProvider.articleWithId(id).execute();
+		PageResponse pageResponse=searchRequestProvider.contentWithId(id).execute();
 		return contentNormaliserTransform.apply(pageResponse.content);
 	}
 
