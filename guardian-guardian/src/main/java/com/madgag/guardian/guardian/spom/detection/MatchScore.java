@@ -33,6 +33,6 @@ public class MatchScore implements Comparable<MatchScore> {
 	
 	@Override
 	public String toString() {
-		return normalisedLevenshteinDistance.toString();
+		return normalisedLevenshteinDistance==null?"??":normalisedLevenshteinDistance.toString();
 	}
 }

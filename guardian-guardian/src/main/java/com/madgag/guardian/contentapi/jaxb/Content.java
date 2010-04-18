@@ -3,6 +3,7 @@ package com.madgag.guardian.contentapi.jaxb;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Multimaps.index;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -28,8 +29,9 @@ public class Content {
 	@XmlAttribute(name="api-url")
 	public String apiUrl;
 
+	@XmlJavaTypeAdapter(StringUriAdapter.class)
 	@XmlAttribute(name="web-url")
-	public String webUrl;
+	public URI webUrl;
 	
 	@XmlElementWrapper(name="tags")
 	@XmlElement(name="tag")

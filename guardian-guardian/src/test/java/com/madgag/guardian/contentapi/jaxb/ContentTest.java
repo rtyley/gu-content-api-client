@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.io.StringReader;
+import java.net.URI;
 
 import javax.xml.bind.JAXBContext;
 
@@ -38,7 +39,7 @@ public class ContentTest {
 		assertThat(content.id, equalTo("music/2010/mar/25/gavin-friday-virgin-prunes"));
 		assertThat(content.webTitle, equalTo("Gavin Friday: 'You can't be what you were'"));
 		assertThat(content.apiUrl, equalTo("http://content.guardianapis.com/music/2010/mar/25/gavin-friday-virgin-prunes"));
-		assertThat(content.webUrl, equalTo("http://www.guardian.co.uk/music/2010/mar/25/gavin-friday-virgin-prunes"));
+		assertThat(content.webUrl, equalTo(URI.create("http://www.guardian.co.uk/music/2010/mar/25/gavin-friday-virgin-prunes")));
 		
 		assertThat(content.webPublicationDate, notNullValue());
 		assertThat(content.webPublicationDate.dayOfMonth().get(), equalTo(25));

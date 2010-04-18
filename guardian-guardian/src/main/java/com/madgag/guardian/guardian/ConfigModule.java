@@ -1,5 +1,7 @@
 package com.madgag.guardian.guardian;
 
+import static com.rosaloves.net.shorturl.bitly.BitlyFactory.newJmpInstance;
+
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -13,6 +15,7 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.madgag.guardian.guardian.spom.detection.reporting.DelegatingSpomReporter;
 import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
+import com.rosaloves.net.shorturl.bitly.Bitly;
 
 public class ConfigModule extends AbstractModule {
 
@@ -33,6 +36,11 @@ public class ConfigModule extends AbstractModule {
 			// This is the preferred way to tell Guice something went wrong
 			binder.addError(e);
 		}
+	}
+
+	@Provides
+	protected Bitly getBitlyClient(@Named("bitly-api.username") String username, @Named("bitly-api.key") String apiKey) {
+		return newJmpInstance(username, apiKey);
 	}
 	
 	@Provides
