@@ -89,7 +89,7 @@ public class SpomIdentifierTest {
 		SpomReport spomReport = spomIdentifier.identifySpomsFor(preferredMaster, 
 				newHashSet(someMonkey.getId() ,anArticleWhichLooksVeryLikeTheMaster.getId(), someOtherMonkey.getId()));
 		
-		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItem(anArticleWhichLooksVeryLikeTheMaster));
+		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItem(anArticleWhichLooksVeryLikeTheMaster.getId()));
 	}
 	
 	@Test
@@ -116,16 +116,15 @@ public class SpomIdentifierTest {
 	
 	
 	
-//	@Test
-//	public void shouldBeTheCoolest() {
-//		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
-//		NormalisedArticle pm=articleProvider.normalisedArticleFor("books/2010/jan/17/mark-kermode-only-movie-extract");
-//		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-//		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
-//		DetectedSpom detectedSpom = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
-//		
-//		assertThat(detectedSpom.getSpom().getId(), equalTo("lifeandstyle/gardening-blog/2010/jan/29/gardens"));
-//	}
+	@Test
+	public void shouldBeTheCoolest() {
+		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
+		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
+		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
+		SpomReport spomReport = spomIdentifier.identifySpomsFor("news/blog/2008/jan/09/michaelwhitespoliticalblog59", newHashSet("politics/blog/2008/jan/09/michaelwhitespoliticalblog59"));
+		
+		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItem("politics/blog/2008/jan/09/michaelwhitespoliticalblog59"));
+	}
 	
 
 	

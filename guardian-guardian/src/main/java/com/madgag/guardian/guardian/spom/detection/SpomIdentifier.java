@@ -1,10 +1,10 @@
 package com.madgag.guardian.guardian.spom.detection;
 
-import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.inject.Inject;
@@ -39,14 +39,14 @@ public class SpomIdentifier {
 		float thresholdScore = spomMatchScorer.getThresholdFor(preferredMaster);
 		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+thresholdScore+" candidates:"+listOfPossibleSpomIds.size());
 		
-		Map<NormalisedArticle,MatchScore> detectedSpoms=newHashMap();
+		List<SpomMatch> detectedSpoms=newArrayList();
 		for (String possibleSpomId : listOfPossibleSpomIds) {
 			NormalisedArticle possibleSpom=articleProvider.normalisedArticleFor(possibleSpomId);
 			if (possibleSpom!=null) {
 				MatchScore currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, thresholdScore); 
 				if (currentMatchScore!=null) {
 					log.info("Found possible! "+currentMatchScore+" "+possibleSpomId);
-					detectedSpoms.put(possibleSpom, currentMatchScore);
+					detectedSpoms.add(new SpomMatch(possibleSpom, currentMatchScore));
 				}
 			}
 		}

@@ -1,23 +1,29 @@
 package com.madgag.guardian.guardian.spom.detection;
 
+import static com.google.common.collect.Maps.uniqueIndex;
+
+import java.util.List;
 import java.util.Map;
+
+import com.google.common.base.Function;
 
 public class SpomReport {
 	
 	private NormalisedArticle targetArticle;
-	private Map<NormalisedArticle,MatchScore> detectedSpoms;
+	private Map<String,SpomMatch> detectedSpoms;
 	
-	public SpomReport(NormalisedArticle targetArticle, Map<NormalisedArticle, MatchScore> detectedSpoms) {
+	public SpomReport(NormalisedArticle targetArticle, List<SpomMatch> spomMatches) {
 		this.targetArticle = targetArticle;
-		this.detectedSpoms = detectedSpoms;
-		
+		this.detectedSpoms = uniqueIndex(spomMatches, new Function<SpomMatch, String>() {
+			public String apply(SpomMatch match) { return match.getSpom().getId(); }
+		});
 	}
 
 	public NormalisedArticle getTargetArticle() {
 		return targetArticle;
 	}
 	
-	public Map<NormalisedArticle,MatchScore> getSpomsWithMatchScores() {
+	public Map<String,SpomMatch> getSpomsWithMatchScores() {
 		return detectedSpoms;
 	}
 
