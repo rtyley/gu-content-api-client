@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,30 +119,47 @@ public class SpomIdentifierTest {
 	
 	
 	@Test
-	public void shouldBeTheCoolest() {		
+	public void shouldCorrentlyIdentifySpomsFromReferenceCorpus() {
 		shouldReportAsSpom("news/blog/2008/jan/09/michaelwhitespoliticalblog59","politics/blog/2008/jan/09/michaelwhitespoliticalblog59");
 		shouldReportAsSpom("politics/blog/2008/jan/09/primeministersquestionslive9","news/blog/2008/jan/09/primeministersquestionslive9");
 		shouldReportAsSpom("football/2009/may/01/newcastle-liverpool-injuries-shearer","football/2009/may/01/alan-shearer-newcastleunited");
 		shouldReportAsSpom("politics/2009/may/02/gordon-brown-hazelblears","politics/2009/may/03/blears-brown-johnson");
-		
 		shouldReportAsSpom("artanddesign/2009/jul/01/zaha-hadid-bach-salon-architecture", "artanddesign/2009/jun/30/zaha-hadid-manchester-international-festival");
 		shouldReportAsSpom("sport/2009/jul/01/wimbledon-andy-murray-juan-carlos-ferrero", "sport/2009/jun/30/wimbledon-andy-murray-juan-carlos-ferrero");
 		shouldReportAsSpom("music/2009/jun/30/review-sco-ticciati", "music/2009/jul/01/sco-ticciati-pitlochry");
 		shouldReportAsSpom("world/2009/jul/01/yemen-plane-crash-only-survivor", "world/2009/jul/02/yemen-air-crash-girl-speaks");
-		
 		shouldReportAsSpom("technology/2008/jan/05/smartphone.dorktalk", "technology/2008/jan/05/mobilephones","technology/2008/jan/05/mobilephones.internet");
+		shouldReportAsSpom("film/filmblog/2008/jan/05/ifonlywecouldtopplehollyw", "film/2008/jan/05/2");
+		shouldReportAsSpom("lifeandstyle/2010/feb/20/oliver-james-skunk-schizophrenia", "lifeandstyle/2010/feb/20/oliver-james-skunk-schizophrenia-psychosis");
 	}
 	
-
+	@Test
+	public void shouldCorrectlyAllowValidDistinctArticlesFromReferenceCorpus() {
+		shouldAllowDistinctArticles("world/2010/jan/07/southern-sudan-tribal-clashes-deaths","world/2010/jan/07/sudan-conflict-aid-war-oxfam");
+		
+	}
+	
+	private void shouldAllowDistinctArticles(String targetId, String... spomIds) {
+		SpomIdentifier spomIdentifier = createRealSpomIdentifier();
+		SpomReport spomReport = spomIdentifier.identifySpomsFor(targetId, newHashSet(spomIds));
+		
+		assertThat(spomReport.hasDetectedSpoms(),is(false));
+		
+	}
 	
 	private void shouldReportAsSpom(String targetId, String... spomIds) {
-		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
-		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
+		SpomIdentifier spomIdentifier = createRealSpomIdentifier();
 		SpomReport spomReport = spomIdentifier.identifySpomsFor(targetId, newHashSet(spomIds));
 		
 		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItems(spomIds));
 		
+	}
+
+	private SpomIdentifier createRealSpomIdentifier() {
+		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
+		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
+		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
+		return spomIdentifier;
 	}
 
 
