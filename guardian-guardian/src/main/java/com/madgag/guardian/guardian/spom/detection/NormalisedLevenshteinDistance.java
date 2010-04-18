@@ -1,5 +1,7 @@
 package com.madgag.guardian.guardian.spom.detection;
 
+import static java.lang.Math.round;
+
 public class NormalisedLevenshteinDistance {
 
 	private final float value;
@@ -11,5 +13,10 @@ public class NormalisedLevenshteinDistance {
 	public float getValue() {
 		return value;
 	}
+
 	
+	@Override
+	public String toString() {
+		return "\u0394="+round(value * 100)+"%";
+	}
 }

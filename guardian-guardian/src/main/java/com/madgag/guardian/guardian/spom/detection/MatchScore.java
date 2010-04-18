@@ -30,4 +30,9 @@ public class MatchScore implements Comparable<MatchScore> {
 	public boolean isBetterThan(MatchScore otherMatchScore) {
 		return compareTo(otherMatchScore)<0;
 	}
+	
+	@Override
+	public String toString() {
+		return normalisedLevenshteinDistance.toString();
+	}
 }

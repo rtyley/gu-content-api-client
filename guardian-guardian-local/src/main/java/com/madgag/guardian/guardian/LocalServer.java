@@ -13,7 +13,7 @@ public class LocalServer {
 		
 		Injector injector = Guice.createInjector(new ConfigModule(), new LocalServerConfig());
 	    
-		Interval searchInterval = new Interval(new DateTime(2010, 1, 6, 0, 0, 0, 0),new DateTime(2010, 1, 8, 0, 0, 0, 0));
+		Interval searchInterval = new Interval(new DateTime(2010, 2, 23, 0, 0, 0, 0),new DateTime(2010, 2, 25, 0, 0, 0, 0));
 	    
 	    BulkSearcher bulkSearcher = injector.getInstance(BulkSearcher.class);
 	    long start= currentTimeMillis();
