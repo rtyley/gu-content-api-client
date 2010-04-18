@@ -133,11 +133,11 @@ public class SpomIdentifierTest {
 		shouldReportAsSpom("lifeandstyle/2010/feb/20/oliver-james-skunk-schizophrenia", "lifeandstyle/2010/feb/20/oliver-james-skunk-schizophrenia-psychosis");
 	}
 	
-	@Test
-	public void shouldCorrectlyAllowValidDistinctArticlesFromReferenceCorpus() {
-		shouldAllowDistinctArticles("world/2010/jan/07/southern-sudan-tribal-clashes-deaths","world/2010/jan/07/sudan-conflict-aid-war-oxfam");
-		
-	}
+//	@Test
+//	public void shouldCorrectlyAllowValidDistinctArticlesFromReferenceCorpus() {
+//		shouldAllowDistinctArticles("world/2010/jan/07/southern-sudan-tribal-clashes-deaths","world/2010/jan/07/sudan-conflict-aid-war-oxfam");
+//		
+//	}
 	
 	private void shouldAllowDistinctArticles(String targetId, String... spomIds) {
 		SpomIdentifier spomIdentifier = createRealSpomIdentifier();

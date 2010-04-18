@@ -1,6 +1,9 @@
 package com.madgag.guardian.guardian;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,11 +34,39 @@ public class DiffServlet extends HttpServlet {
 		Content leftContent = contentFor(left), rightContent= contentFor(right);
 		req.setAttribute("left", leftContent);
 		req.setAttribute("right", rightContent);
+		System.out.println(leftContent);
+		List<DiffedField> diffs=newArrayList();
+		diffs.add(new DiffedField(leftContent.webTitle, "", rightContent.webTitle));
+		req.setAttribute("diffs", diffs);
 		req.getRequestDispatcher("/WEB-INF/diff.jsp").forward(req, res); 
 
 	}
 
 	private Content contentFor(String id) {
 		return apiClient.loadPageWith(id).showFields("body").showTags("all").execute().content;
+	}
+	
+	public static class DiffedField {
+		private final String left;
+		private final String diff;
+		private final String right;
+
+		public DiffedField(String left, String diff, String right) {
+			this.left = left;
+			this.diff = diff;
+			this.right = right;
+		}
+		
+		public String getLeft() {
+			return left;
+		}
+		
+		public String getDiff() {
+			return diff;
+		}
+		
+		public String getRight() {
+			return right;
+		}
 	}
 }
