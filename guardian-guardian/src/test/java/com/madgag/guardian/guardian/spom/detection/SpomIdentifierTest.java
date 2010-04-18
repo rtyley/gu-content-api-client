@@ -128,6 +128,8 @@ public class SpomIdentifierTest {
 		shouldReportAsSpom("sport/2009/jul/01/wimbledon-andy-murray-juan-carlos-ferrero", "sport/2009/jun/30/wimbledon-andy-murray-juan-carlos-ferrero");
 		shouldReportAsSpom("music/2009/jun/30/review-sco-ticciati", "music/2009/jul/01/sco-ticciati-pitlochry");
 		shouldReportAsSpom("world/2009/jul/01/yemen-plane-crash-only-survivor", "world/2009/jul/02/yemen-air-crash-girl-speaks");
+		
+		shouldReportAsSpom("technology/2008/jan/05/smartphone.dorktalk", "technology/2008/jan/05/mobilephones","technology/2008/jan/05/mobilephones.internet");
 	}
 	
 
