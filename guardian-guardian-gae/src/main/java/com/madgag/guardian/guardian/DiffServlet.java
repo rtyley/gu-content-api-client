@@ -37,6 +37,7 @@ public class DiffServlet extends HttpServlet {
 		System.out.println(leftContent);
 		List<DiffedField> diffs=newArrayList();
 		diffs.add(new DiffedField(leftContent.webTitle, "", rightContent.webTitle));
+		diffs.add(new DiffedField(leftContent.getField("body"), "", rightContent.getField("body")));
 		req.setAttribute("diffs", diffs);
 		req.getRequestDispatcher("/WEB-INF/diff.jsp").forward(req, res); 
 
