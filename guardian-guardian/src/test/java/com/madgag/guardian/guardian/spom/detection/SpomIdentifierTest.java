@@ -3,6 +3,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -117,17 +118,32 @@ public class SpomIdentifierTest {
 	
 	
 	@Test
-	public void shouldBeTheCoolest() {
-		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
-		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
-		SpomReport spomReport = spomIdentifier.identifySpomsFor("news/blog/2008/jan/09/michaelwhitespoliticalblog59", newHashSet("politics/blog/2008/jan/09/michaelwhitespoliticalblog59"));
+	public void shouldBeTheCoolest() {		
+		shouldReportAsSpom("news/blog/2008/jan/09/michaelwhitespoliticalblog59","politics/blog/2008/jan/09/michaelwhitespoliticalblog59");
+		shouldReportAsSpom("politics/blog/2008/jan/09/primeministersquestionslive9","news/blog/2008/jan/09/primeministersquestionslive9");
+		shouldReportAsSpom("football/2009/may/01/newcastle-liverpool-injuries-shearer","football/2009/may/01/alan-shearer-newcastleunited");
+		shouldReportAsSpom("politics/2009/may/02/gordon-brown-hazelblears","politics/2009/may/03/blears-brown-johnson");
 		
-		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItem("politics/blog/2008/jan/09/michaelwhitespoliticalblog59"));
+		shouldReportAsSpom("artanddesign/2009/jul/01/zaha-hadid-bach-salon-architecture", "artanddesign/2009/jun/30/zaha-hadid-manchester-international-festival");
+		shouldReportAsSpom("sport/2009/jul/01/wimbledon-andy-murray-juan-carlos-ferrero", "sport/2009/jun/30/wimbledon-andy-murray-juan-carlos-ferrero");
+		shouldReportAsSpom("music/2009/jun/30/review-sco-ticciati", "music/2009/jul/01/sco-ticciati-pitlochry");
+		shouldReportAsSpom("world/2009/jul/01/yemen-plane-crash-only-survivor", "world/2009/jul/02/yemen-air-crash-girl-speaks");
 	}
 	
 
 	
+	private void shouldReportAsSpom(String targetId, String... spomIds) {
+		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
+		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
+		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
+		SpomReport spomReport = spomIdentifier.identifySpomsFor(targetId, newHashSet(spomIds));
+		
+		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItems(spomIds));
+		
+	}
+
+
+
 	public class StubArticleProvider implements NormalisedArticleProvider {
 
 		private final Map<String,NormalisedArticle> articleMap;

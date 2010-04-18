@@ -4,8 +4,10 @@ import static java.util.logging.Level.SEVERE;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.logging.Logger;
@@ -25,10 +27,14 @@ public class ContentDumper {
 		this.dumpDirectory = dumpDirectory;
 	}
 
-	public void dumpContentWithId(String contentId) {
+	public void dumpContentWithId(String groupName, String contentId) {
 		URI uri = articleSearchRequestProvider.contentWithId(contentId).toUri();
-		File dumpFile = new File(dumpDirectory, contentId.replace('/', '.')+".xml");
+		File groupDirectory = new File(dumpDirectory,groupName);
+		groupDirectory.mkdirs();
+		File dumpFile = new File(groupDirectory, contentId.replace('/', '.')+".xml");
 		try {
+			logUrl(uri, groupDirectory);
+
 			log.info("Dumping " + contentId + " to "+ dumpFile.getAbsolutePath());
 			FileWriter writer = new FileWriter(dumpFile);
 			try {
@@ -41,5 +47,11 @@ public class ContentDumper {
 		} catch (Exception e) {
 			log.log(SEVERE, "Unable to dump " + uri, e);
 		}
+	}
+
+	private void logUrl(URI uri, File groupDirectory) throws IOException {
+		BufferedWriter output = new BufferedWriter(new FileWriter(new File(groupDirectory,"urls.txt"),true));
+		output.append(uri.toString()+"\n");
+		output.close();
 	}
 }
