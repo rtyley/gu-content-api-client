@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import name.fraser.neil.plaintext.diff_match_patch;
 import name.fraser.neil.plaintext.diff_match_patch.Diff;
+import name.fraser.neil.plaintext.diff_match_patch.Operation;
 
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -49,17 +50,17 @@ public class DiffServlet extends HttpServlet {
 		req.setAttribute("right", rightContent);
 		System.out.println(leftContent);
 		List<DiffedField> diffs=newArrayList();
-		diffs.add(new DiffedField(leftContent.webTitle, "", rightContent.webTitle));
-		diffs.add(new DiffedField(leftContent.webUrl, "", rightContent.webUrl));
+		diffs.add(new DiffedField("Title",leftContent.webTitle, "", rightContent.webTitle));
+		diffs.add(new DiffedField("Url",leftContent.webUrl, "", rightContent.webUrl));
 		Period period = new Period(leftContent.webPublicationDate,rightContent.webPublicationDate);
-		diffs.add(new DiffedField(leftContent.webPublicationDate, period.toString(PERIOD_FORMAT), rightContent.webPublicationDate));
+		diffs.add(new DiffedField("Web-Pub Date",leftContent.webPublicationDate, period.toString(PERIOD_FORMAT), rightContent.webPublicationDate));
 		
 		
 		diff_match_patch diffMatchPatch = new diff_match_patch();
 		LinkedList<Diff> foo = diffMatchPatch.diff_main(removeTags( leftContent.getField("body")), removeTags(rightContent.getField("body")));
-		diffMatchPatch.diff_prettyHtml(foo);
+		diffMatchPatch.diff_cleanupSemantic(foo);
 		
-		diffs.add(new DiffedField(leftContent.getField("body"), diffMatchPatch.diff_prettyHtml(foo), rightContent.getField("body")));
+		diffs.add(new DiffedField("Body",leftContent.getField("body"), diff_prettyHtml(foo), rightContent.getField("body")));
 		req.setAttribute("diffs", diffs);
 		req.getRequestDispatcher("/WEB-INF/diff.jsp").forward(req, res); 
 
@@ -68,6 +69,32 @@ public class DiffServlet extends HttpServlet {
 	private Content contentFor(String id) {
 		return apiClient.loadPageWith(id).showFields("body").showTags("all").execute().content;
 	}
+	
+	
+	
+	  public String diff_prettyHtml(LinkedList<Diff> diffs) {
+		    StringBuilder html = new StringBuilder();
+		    int i = 0;
+		    for (Diff aDiff : diffs) {
+		      String text = aDiff.text.replace("&", "&amp;").replace("<", "&lt;")
+		          .replace(">", "&gt;").replace("\n", "&para;<BR>");
+		      switch (aDiff.operation) {
+		      case INSERT:
+		        html.append("<ins>").append(text).append("</ins>");
+		        break;
+		      case DELETE:
+		        html.append("<del>").append(text).append("</del>");
+		        break;
+		      case EQUAL:
+		        html.append("<span>").append(text).append("</span>");
+		        break;
+		      }
+		      if (aDiff.operation != Operation.DELETE) {
+		        i += aDiff.text.length();
+		      }
+		    }
+		    return html.toString();
+		  }
 	
 	private static PeriodFormatter getPeriodFormat() {
         return new PeriodFormatterBuilder()
@@ -98,11 +125,17 @@ public class DiffServlet extends HttpServlet {
 		private final Object left;
 		private final String diff;
 		private final Object right;
+		private final String fieldName;
 
-		public DiffedField(Object left, String diff, Object right) {
+		public DiffedField(String fieldName,Object left, String diff, Object right) {
+			this.fieldName = fieldName;
 			this.left = left;
 			this.diff = diff;
 			this.right = right;
+		}
+		
+		public String getFieldName() {
+			return fieldName;
 		}
 		
 		public Object getLeft() {
