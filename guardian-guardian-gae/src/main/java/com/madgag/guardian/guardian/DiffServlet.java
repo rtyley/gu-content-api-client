@@ -10,6 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.Duration;
+import org.joda.time.Interval;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.madgag.guardian.contentapi.ContentApiClient;
@@ -18,7 +25,7 @@ import com.madgag.guardian.contentapi.jaxb.Content;
 @SuppressWarnings("serial")
 @Singleton
 public class DiffServlet extends HttpServlet {
-	
+	private final static PeriodFormatter PERIOD_FORMAT = getPeriodFormat();
 	private final ContentApiClient apiClient;
 	
 	@Inject
@@ -38,6 +45,8 @@ public class DiffServlet extends HttpServlet {
 		List<DiffedField> diffs=newArrayList();
 		diffs.add(new DiffedField(leftContent.webTitle, "", rightContent.webTitle));
 		diffs.add(new DiffedField(leftContent.webUrl, "", rightContent.webUrl));
+		Period period = new Period(leftContent.webPublicationDate,rightContent.webPublicationDate);
+		diffs.add(new DiffedField(leftContent.webPublicationDate, period.toString(PERIOD_FORMAT), rightContent.webPublicationDate));
 		diffs.add(new DiffedField(leftContent.getField("body"), "", rightContent.getField("body")));
 		req.setAttribute("diffs", diffs);
 		req.getRequestDispatcher("/WEB-INF/diff.jsp").forward(req, res); 
@@ -47,6 +56,31 @@ public class DiffServlet extends HttpServlet {
 	private Content contentFor(String id) {
 		return apiClient.loadPageWith(id).showFields("body").showTags("all").execute().content;
 	}
+	
+	private static PeriodFormatter getPeriodFormat() {
+        return new PeriodFormatterBuilder()
+                .appendYears()
+                .appendSuffix(" year", " years")
+                .appendSeparator(", ")
+                .appendMonths()
+                .appendSuffix(" month", " months")
+                .appendSeparator(", ")
+                .appendDays()
+                .appendSuffix(" day", " days")
+                .appendSeparator(", ")
+                .appendHours()
+                .appendSuffix(" hour", " hours")
+                .appendSeparator(", ")
+                .appendMinutes()
+                .appendSuffix(" minute", " minutes")
+                .appendSeparator(", ")
+                .appendSeconds()
+                .appendSuffix(" second", " seconds")
+                .appendSeparator(", ")
+                .appendMillis()
+                .appendSuffix(" ms")
+                .toFormatter();
+    }
 	
 	public static class DiffedField {
 		private final Object left;

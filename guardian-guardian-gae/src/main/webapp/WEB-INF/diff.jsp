@@ -7,15 +7,15 @@
 <table>
   <tr>
     <th>Left</th>
+    <th>Diff</th>
     <th>Right</th>
   </tr>
 
 	<c:forEach items="${diffs}" var="diff">
 	      <tr>
-		<td>
 			<td>${diff.left}</td>
+			<td>${diff.diff}</td>
 			<td>${diff.right}</td>
-		</td>
 	      </tr>
     </c:forEach>
 </table>
