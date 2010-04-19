@@ -1,14 +1,19 @@
 package com.madgag.guardian.guardian;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.madgag.guardian.guardian.spom.detection.NormalisedArticle.removeTags;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import name.fraser.neil.plaintext.diff_match_patch;
+import name.fraser.neil.plaintext.diff_match_patch.Diff;
 
 import org.joda.time.Duration;
 import org.joda.time.Interval;
@@ -21,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.madgag.guardian.contentapi.ContentApiClient;
 import com.madgag.guardian.contentapi.jaxb.Content;
+import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 
 @SuppressWarnings("serial")
 @Singleton
@@ -47,7 +53,13 @@ public class DiffServlet extends HttpServlet {
 		diffs.add(new DiffedField(leftContent.webUrl, "", rightContent.webUrl));
 		Period period = new Period(leftContent.webPublicationDate,rightContent.webPublicationDate);
 		diffs.add(new DiffedField(leftContent.webPublicationDate, period.toString(PERIOD_FORMAT), rightContent.webPublicationDate));
-		diffs.add(new DiffedField(leftContent.getField("body"), "", rightContent.getField("body")));
+		
+		
+		diff_match_patch diffMatchPatch = new diff_match_patch();
+		LinkedList<Diff> foo = diffMatchPatch.diff_main(removeTags( leftContent.getField("body")), removeTags(rightContent.getField("body")));
+		diffMatchPatch.diff_prettyHtml(foo);
+		
+		diffs.add(new DiffedField(leftContent.getField("body"), diffMatchPatch.diff_prettyHtml(foo), rightContent.getField("body")));
 		req.setAttribute("diffs", diffs);
 		req.getRequestDispatcher("/WEB-INF/diff.jsp").forward(req, res); 
 

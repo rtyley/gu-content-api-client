@@ -36,9 +36,13 @@ public class NormalisedArticle implements Serializable {
 	}
 
 	private String normalisedBodyText(String bodyText) {
-		String textWithNoTags = tagPattern.matcher(bodyText).replaceAll(""); //allTagCleaner.clean(bodyText);
+		String textWithNoTags = removeTags(bodyText); //allTagCleaner.clean(bodyText);
 		String textWithoutNonAlphaNum = nonAlphaNumPattern.matcher(textWithNoTags).replaceAll("");
 		return spacePattern.matcher(textWithoutNonAlphaNum).replaceAll(" ").trim().toLowerCase();
+	}
+
+	public static String removeTags(String bodyText) {
+		return tagPattern.matcher(bodyText).replaceAll("");
 	}
 
 	public Multimap<String, Tag> getTags() {
