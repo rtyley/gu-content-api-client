@@ -2,15 +2,15 @@ package com.madgag.guardian.guardian.spom.detection;
 
 import java.io.InputStream;
 
+import com.google.common.base.Function;
 import com.madgag.guardian.contentapi.ContentApiException;
 import com.madgag.guardian.contentapi.jaxb.PageResponse;
 import com.madgag.guardian.guardian.ContentNormaliserTransform;
-import com.madgag.guardian.guardian.NormalisedArticleProvider;
 
-public class DumpedArticleProvider implements NormalisedArticleProvider {
+public class DumpedArticleProvider implements Function<String,NormalisedArticle> {
 
 	@Override
-	public NormalisedArticle normalisedArticleFor(String id) {
+	public NormalisedArticle apply(String id) {
 		try {
 			String path="/sample-articles/"+id.replace('/', '.')+".xml";
 			InputStream resourceStream = DumpedArticleProvider.class.getResourceAsStream(path);

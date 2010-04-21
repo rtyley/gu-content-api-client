@@ -18,13 +18,18 @@ import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
 
 @XmlRootElement
-public class Content {
+public class Content implements HasId {
 	
 	@XmlAttribute(name="web-title")
 	public String webTitle;
 
 	@XmlAttribute
 	public String id;
+	
+	@Override
+	public String getId() {
+		return id;
+	}
 
 	@XmlAttribute(name="api-url")
 	public String apiUrl;
@@ -62,5 +67,10 @@ public class Content {
 		return index(tags, new Function<Tag, String>() {
 			public String apply(Tag from) { return from.type; }
 		});
+	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+"["+id+"]";
 	}
 }

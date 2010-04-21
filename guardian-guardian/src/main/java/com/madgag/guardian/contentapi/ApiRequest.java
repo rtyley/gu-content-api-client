@@ -14,9 +14,9 @@ public abstract class ApiRequest<Req extends ApiRequest<Req,Resp>, Resp extends 
 	protected static final Joiner COMMA_JOINER = Joiner.on(",");
 	private static final MapJoiner QUERY_PARAMS_JOINER = Joiner.on("&").withKeyValueSeparator("=");
 
-	protected final Hitter hitter;
+	protected final HitterThinko hitter;
 	
-	protected ApiRequest(Hitter hitter) {
+	protected ApiRequest(HitterThinko hitter) {
 		this.hitter = hitter;
 	}
 	
@@ -27,7 +27,7 @@ public abstract class ApiRequest<Req extends ApiRequest<Req,Resp>, Resp extends 
 	public abstract JAXBContext getJaxbContextForResponse();
 	
 	public final Resp execute() {
-		return hitter.jojo((Req)this);
+		return hitter.makeWebRequestFor((Req)this);
 	}
 	
 	public URI toUri() {

@@ -2,8 +2,10 @@ package com.madgag.guardian.contentapi;
 
 import static com.google.common.collect.ImmutableMap.copyOf;
 import static com.google.common.collect.Maps.newLinkedHashMap;
+import static java.util.Arrays.asList;
 import static org.joda.time.DateTimeZone.UTC;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -24,16 +26,24 @@ public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> impl
 	
 	private final ImmutableMap<String,String> params;
 	
-	public SearchRequest(Hitter hitter) {
+	public SearchRequest(HitterThinko hitter) {
 		super(hitter);
 		params = ImmutableMap.of();
 	}
 	
-	public SearchRequest(Hitter hitter, ImmutableMap<String,String> params) {
+	public SearchRequest(HitterThinko hitter, ImmutableMap<String,String> params) {
 		super(hitter);
 		this.params = params;
 	}
 
+	public SearchRequest withIds(Iterable<String> ids) {
+		return newSearchRequestWith("ids", COMMA_JOINER.join(ids));
+	}
+	
+	public SearchRequest withIds(String... ids) {
+		return newSearchRequestWith("ids", COMMA_JOINER.join(ids));
+	}
+	
 	public SearchRequest withTags(String... tags) {
 		return newSearchRequestWith("tag", COMMA_JOINER.join(tags));
 	}
@@ -93,6 +103,10 @@ public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> impl
 	@Override
 	protected String getPathPrefix() {
 		return "search";
+	}
+
+	public List<String> getIds() {
+		return asList(params.get("ids").split(","));
 	}
 
 }

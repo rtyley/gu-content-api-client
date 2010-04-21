@@ -7,9 +7,10 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.Multimap;
+import com.madgag.guardian.contentapi.jaxb.HasId;
 import com.madgag.guardian.contentapi.jaxb.Tag;
 
-public class NormalisedArticle implements Serializable {
+public class NormalisedArticle implements Serializable, HasId {
 	private static final Pattern spacePattern = Pattern.compile("\\s{2,}");
 	private static final Pattern nonAlphaNumPattern = Pattern.compile("[^\\s\\p{Alnum}]*");
 	private static final Pattern tagPattern = Pattern.compile("<.+?>");

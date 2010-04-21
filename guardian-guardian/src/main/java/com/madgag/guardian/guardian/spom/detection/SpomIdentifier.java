@@ -1,14 +1,11 @@
 package com.madgag.guardian.guardian.spom.detection;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.inject.Inject;
-import com.madgag.guardian.guardian.NormalisedArticleProvider;
 import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
 
 public class SpomIdentifier {
@@ -17,41 +14,33 @@ public class SpomIdentifier {
 	
 	private final SpomMatchScorer spomMatchScorer;
 
-	private final NormalisedArticleProvider articleProvider;
-
 	private final SpomDetectionReporter spomDetectionReporter;
 
 
 	@Inject
-	public SpomIdentifier(SpomMatchScorer spomMatchScorer, NormalisedArticleProvider articleProvider, SpomDetectionReporter spomDetectionReporter) {
+	public SpomIdentifier(SpomMatchScorer spomMatchScorer, SpomDetectionReporter spomDetectionReporter) {
 		this.spomMatchScorer = spomMatchScorer;
-		this.articleProvider = articleProvider;
 		this.spomDetectionReporter = spomDetectionReporter;
 	}
-
-	public SpomReport identifySpomsFor(String preferredMasterId, Collection<String> listOfPossibleSpomIds) {
-		return identifySpomsFor(articleProvider.normalisedArticleFor(preferredMasterId), listOfPossibleSpomIds);
-	}
 	
-	public SpomReport identifySpomsFor(NormalisedArticle preferredMaster, Collection<String> listOfPossibleSpomIds) {
-		listOfPossibleSpomIds = newHashSet(listOfPossibleSpomIds);
-		listOfPossibleSpomIds.remove(preferredMaster.getId());
+	public SpomReport identifySpomsFor(NormalisedArticle preferredMaster, Iterable<NormalisedArticle> possibleSpoms) {
 		float thresholdScore = spomMatchScorer.getThresholdFor(preferredMaster);
-		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+thresholdScore+" candidates:"+listOfPossibleSpomIds.size());
+		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+thresholdScore);
 		
+		int numPossibleSpomsChecked=0;
 		List<SpomMatch> detectedSpoms=newArrayList();
-		for (String possibleSpomId : listOfPossibleSpomIds) {
-			NormalisedArticle possibleSpom=articleProvider.normalisedArticleFor(possibleSpomId);
-			if (possibleSpom!=null) {
-				MatchScore currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, thresholdScore); 
+		for (NormalisedArticle possibleSpom : possibleSpoms) {
+			if (possibleSpom!=null && !possibleSpom.getId().equals(preferredMaster.getId())) {
+				MatchScore currentMatchScore = spomMatchScorer.getMatchScore(preferredMaster, possibleSpom, thresholdScore);
+				numPossibleSpomsChecked++;
 				if (currentMatchScore!=null) {
-					log.info("Found possible! "+currentMatchScore+" "+possibleSpomId);
+					log.info("Found possible! "+currentMatchScore+" "+possibleSpom);
 					detectedSpoms.add(new SpomMatch(possibleSpom, currentMatchScore));
 				}
 			}
 		}
-		
 		SpomReport spomReport = new SpomReport(preferredMaster,detectedSpoms);
+		log.info("Processing masterArticle="+preferredMaster+" - numPossibleSpomsChecked: "+numPossibleSpomsChecked+" report:"+spomReport);
 		spomDetectionReporter.report(spomReport);
 		return spomReport;
 	}

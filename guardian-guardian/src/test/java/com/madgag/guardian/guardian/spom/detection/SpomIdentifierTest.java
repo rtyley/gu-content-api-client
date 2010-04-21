@@ -1,6 +1,8 @@
 package com.madgag.guardian.guardian.spom.detection;
+import static com.google.common.collect.Lists.transform;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
@@ -10,9 +12,9 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,8 @@ public class SpomIdentifierTest {
 	NormalisedArticleProvider articleProvider;
 	private SpomIdentifier spomIdentifier;
 	private NormalisedArticle preferredMaster, someMonkey, someOtherMonkey, anArticleWhichLooksVeryLikeTheMaster;
+	DumpedArticleProvider dumpedArticleProvider=new DumpedArticleProvider();
+	
 
 	@Before
 	public void setUp() {
@@ -40,7 +44,7 @@ public class SpomIdentifierTest {
 		someOtherMonkey = new NormalisedArticle("someOtherMonkey",null,null, "", null, null);
 		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster",null,null, "", null, null);
 		articleProvider=new StubArticleProvider(someMonkey,someOtherMonkey,anArticleWhichLooksVeryLikeTheMaster);
-		spomIdentifier = new SpomIdentifier(spomMatchScorer, articleProvider, spomDetectionReporter);
+		spomIdentifier = new SpomIdentifier(spomMatchScorer, spomDetectionReporter);
 
 		when(spomMatchScorer.getThresholdFor(any(NormalisedArticle.class))).thenReturn(0.1f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(null);
@@ -89,21 +93,21 @@ public class SpomIdentifierTest {
 	@Test
 	public void shouldIdentifyBestScoringMatch() throws Exception {
 		SpomReport spomReport = spomIdentifier.identifySpomsFor(preferredMaster, 
-				newHashSet(someMonkey.getId() ,anArticleWhichLooksVeryLikeTheMaster.getId(), someOtherMonkey.getId()));
+				newHashSet(someMonkey,anArticleWhichLooksVeryLikeTheMaster, someOtherMonkey));
 		
 		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItem(anArticleWhichLooksVeryLikeTheMaster.getId()));
 	}
 	
 	@Test
 	public void shouldNotIdentifySpomWorseThanThreshold() throws Exception {
-		SpomReport spomReport = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(someMonkey.getId(), someOtherMonkey.getId()));
+		SpomReport spomReport = spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(someMonkey, someOtherMonkey));
 		
 		assertThat(spomReport.hasDetectedSpoms(), is(false));
 	}
 	
 
 	
-	private SpomReport getSpomFor(String preferredMasterBodyText,	String spomArticleBodyString) {
+	private SpomReport getSpomFor(String preferredMasterBodyText, String spomArticleBodyString) {
 		NormalisedArticle canonicalArticle = new NormalisedArticleBuilder().id("goodie").originalBody(preferredMasterBodyText).toArticle();
 		NormalisedArticle spomArticle = new NormalisedArticleBuilder().id("baddie").originalBody(preferredMasterBodyText).toArticle();
 
@@ -112,8 +116,8 @@ public class SpomIdentifierTest {
 
 	private SpomReport getSpomFor(NormalisedArticle preferredMaster,	NormalisedArticle somePossibleSpom) {
 		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,new StubArticleProvider(somePossibleSpom),spomDetectionReporter);
-		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom.getId()));
+		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,spomDetectionReporter);
+		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom));
 	}
 	
 	
@@ -140,25 +144,30 @@ public class SpomIdentifierTest {
 //	}
 	
 	private void shouldAllowDistinctArticles(String targetId, String... spomIds) {
-		SpomIdentifier spomIdentifier = createRealSpomIdentifier();
-		SpomReport spomReport = spomIdentifier.identifySpomsFor(targetId, newHashSet(spomIds));
+		SpomReport spomReport = getRealSpomReportForDumpedArticles(targetId, spomIds);
 		
 		assertThat(spomReport.hasDetectedSpoms(),is(false));
 		
 	}
+
+	private SpomReport getRealSpomReportForDumpedArticles(String targetId,
+			String... spomIds) {
+		SpomIdentifier spomIdentifier = createRealSpomIdentifier();
+		List<NormalisedArticle> nas = transform(asList(spomIds), dumpedArticleProvider);
+		SpomReport spomReport = spomIdentifier.identifySpomsFor(dumpedArticleProvider.apply(targetId), nas);
+		return spomReport;
+	}
 	
 	private void shouldReportAsSpom(String targetId, String... spomIds) {
-		SpomIdentifier spomIdentifier = createRealSpomIdentifier();
-		SpomReport spomReport = spomIdentifier.identifySpomsFor(targetId, newHashSet(spomIds));
+		SpomReport spomReport = getRealSpomReportForDumpedArticles(targetId, spomIds);
 		
 		assertThat(spomReport.getSpomsWithMatchScores().keySet(), hasItems(spomIds));
 		
 	}
 
 	private SpomIdentifier createRealSpomIdentifier() {
-		NormalisedArticleProvider articleProvider=new DumpedArticleProvider();
 		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,articleProvider,spomDetectionReporter);
+		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,spomDetectionReporter);
 		return spomIdentifier;
 	}
 

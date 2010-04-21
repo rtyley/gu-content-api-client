@@ -33,7 +33,7 @@ public class BulkSearchSpaceGenerator {
 	}
 	
 	public SearchSpace getSearchSpaceCovering(Interval interval) {
-		log.info("Searcing "+interval);
+		log.info("Searching "+interval);
 		Period bufferPeriod = days(2);
 		SearchResponse boo = articleSearch
 						.from(interval.getStart().minus(bufferPeriod))

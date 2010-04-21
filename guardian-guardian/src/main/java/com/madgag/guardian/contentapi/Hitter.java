@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import com.google.inject.Inject;
 
-public class Hitter {
+public class Hitter implements HitterThinko {
 
 	private static final Logger log = Logger.getLogger(Hitter.class.getName());
 
@@ -17,8 +17,11 @@ public class Hitter {
 		this.apiConfig = urlGenerator;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.madgag.guardian.contentapi.HitterThinko#makeWebRequestFor(Req)
+	 */
 	@SuppressWarnings("unchecked")
-	public <Req extends ApiRequest<Req, Resp>, Resp extends ApiResponse<Req, Resp>> Resp jojo(Req apiRequest) {
+	public <Req extends ApiRequest<Req, Resp>, Resp extends ApiResponse<Req, Resp>> Resp makeWebRequestFor(Req apiRequest) {
 		URI uri = apiRequest.toUri();
 		try {
 			URL url = uri.toURL();
@@ -31,6 +34,9 @@ public class Hitter {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.madgag.guardian.contentapi.HitterThinko#getConfig()
+	 */
 	public ApiConfig getConfig() {
 		return apiConfig;
 	}

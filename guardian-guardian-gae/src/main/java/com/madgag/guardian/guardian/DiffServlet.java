@@ -6,6 +6,7 @@ import static com.madgag.guardian.guardian.spom.detection.NormalisedArticle.remo
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,10 +17,7 @@ import name.fraser.neil.plaintext.diff_match_patch;
 import name.fraser.neil.plaintext.diff_match_patch.Diff;
 import name.fraser.neil.plaintext.diff_match_patch.Operation;
 
-import org.joda.time.Duration;
-import org.joda.time.Interval;
 import org.joda.time.Period;
-import org.joda.time.format.PeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -27,7 +25,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.madgag.guardian.contentapi.ContentApiClient;
 import com.madgag.guardian.contentapi.jaxb.Content;
-import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 
 @SuppressWarnings("serial")
 @Singleton
@@ -45,10 +42,14 @@ public class DiffServlet extends HttpServlet {
 			throws ServletException, IOException {
 		String left=req.getParameter("left");
 		String right=req.getParameter("right");
-		Content leftContent = contentFor(left), rightContent= contentFor(right);
+		Map<String,Content> c=contentFor(left,right);
+		if (c.size()!=2) {
+			throw new IllegalArgumentException("Only found "+c.keySet());
+		}
+		Content leftContent = c.get(left), rightContent=c.get(right);
+		
 		req.setAttribute("left", leftContent);
 		req.setAttribute("right", rightContent);
-		System.out.println(leftContent);
 		List<DiffedField> diffs=newArrayList();
 		diffs.add(new DiffedField("Title",leftContent.webTitle, "", rightContent.webTitle));
 		diffs.add(new DiffedField("Url",leftContent.webUrl, "", rightContent.webUrl));
@@ -66,8 +67,8 @@ public class DiffServlet extends HttpServlet {
 
 	}
 
-	private Content contentFor(String id) {
-		return apiClient.loadPageWith(id).showFields("body").showTags("all").execute().content;
+	private Map<String,Content> contentFor(String... ids) {
+		return apiClient.search().withIds(ids).showFields("body").showTags("all").execute().getContentById();
 	}
 	
 	
