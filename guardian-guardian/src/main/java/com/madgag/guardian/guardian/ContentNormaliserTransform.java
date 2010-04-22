@@ -11,10 +11,7 @@ import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 
 public final class ContentNormaliserTransform implements Function<Content, NormalisedArticle> {
 	public NormalisedArticle apply(Content c) {
-		if (!c.hasField("body")) {
-			return null;
-		}
-		String body = c.getField("body");
+		String body = c.hasField("body")?c.getField("body"):"";
 		URI shortUrl = URI.create(c.getField("short-url"));
 		return new NormalisedArticle(c.id, c.webTitle, shortUrl, body, c.webPublicationDate, c.getTagsCategorisedByType() );
 	}
