@@ -1,5 +1,7 @@
 package com.madgag.guardian.guardian.spom.detection.reporting;
 
+import static java.util.logging.Level.SEVERE;
+
 import java.net.URI;
 import java.util.logging.Logger;
 
@@ -37,14 +39,14 @@ public class TwitterReporter implements SpomDetectionReporter {
 			try {
 				shortDiff = bitly.shorten(diffUri.toString()).getShortUrl().toString();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.log(SEVERE, "Failed shortening url "+diffUri, e);
 			}
 			String tweetText = "Wu-oh: "+shortDiff+" "+spomMatch.getMatchScore().getNormalisedLevenshteinDistance() + " " + quickSummary(spomReport.getTargetArticle()) + " & " + quickSummary(spomMatch.getSpom());
             log.info("tweetText ("+tweetText.length()+" chars): "+tweetText);
 			try {
 	            twitter.updateStatus(tweetText);
 			} catch (TwitterException e) {
-				e.printStackTrace();
+				log.log(SEVERE, "Failed posting tweet. Error: "+e.getMessage(), e);
 			}
 		}
 		
