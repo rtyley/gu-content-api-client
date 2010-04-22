@@ -1,4 +1,4 @@
-package com.madgag.guardian.guardian;
+package com.madgag.guardian.guardian.content;
 
 import java.util.Set;
 
@@ -6,5 +6,5 @@ import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 
 public interface BulkNormalisedArticleProvider {
 
-	public Iterable<NormalisedArticle> normalisedArticleFor(Set<String> ids);
+	public Iterable<NormalisedArticle> normalisedArticlesFor(Set<String> ids);
 }

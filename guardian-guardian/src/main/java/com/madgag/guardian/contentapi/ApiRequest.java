@@ -14,9 +14,9 @@ public abstract class ApiRequest<Req extends ApiRequest<Req,Resp>, Resp extends 
 	protected static final Joiner COMMA_JOINER = Joiner.on(",");
 	private static final MapJoiner QUERY_PARAMS_JOINER = Joiner.on("&").withKeyValueSeparator("=");
 
-	protected final HitterThinko hitter;
+	protected final UrlHitter hitter;
 	
-	protected ApiRequest(HitterThinko hitter) {
+	protected ApiRequest(UrlHitter hitter) {
 		this.hitter = hitter;
 	}
 	

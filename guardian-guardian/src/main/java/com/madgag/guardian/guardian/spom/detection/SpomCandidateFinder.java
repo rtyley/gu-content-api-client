@@ -28,7 +28,7 @@ public class SpomCandidateFinder {
 
 	@Inject
 	public SpomCandidateFinder(PopulatedArticleSearchRequestProvider articleSearchRequestProvider, CachingNormalisedArticleProvider cachingNormalisedArticleProvider) {
-		searchRequestForArticlesWithPopulatedFields = articleSearchRequestProvider.articleSearch();
+		searchRequestForArticlesWithPopulatedFields = articleSearchRequestProvider.populatedArticleSearch();
 		this.cachingNormalisedArticleProvider = cachingNormalisedArticleProvider;
 	}
 	

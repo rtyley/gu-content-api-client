@@ -1,15 +1,14 @@
-package com.madgag.guardian.guardian;
+package com.madgag.guardian.guardian.content;
 
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.difference;
-import static com.madgag.guardian.contentapi.BulkContentByIdService.batchProcess;
+import static com.madgag.guardian.contentapi.BatchUtil.batchProcess;
 
 import java.util.Map;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import com.madgag.guardian.contentapi.CachingBulkNormalisedArticleService;
 import com.madgag.guardian.contentapi.NormalisedArticleCache;
 import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
 
@@ -25,7 +24,7 @@ public class BatchingNormalisedArticleProvider implements BulkNormalisedArticleP
 	}
 	
 	@Override
-	public Iterable<NormalisedArticle> normalisedArticleFor(Set<String> ids) {
+	public Iterable<NormalisedArticle> normalisedArticlesFor(Set<String> ids) {
 		Map<String, NormalisedArticle> foundFromCache = cache.getAll(ids);
 		Set<String> idsNotInCache = difference(ids, foundFromCache.keySet());
 		Iterable<NormalisedArticle> normalisedArticlesDirectFromApi = 

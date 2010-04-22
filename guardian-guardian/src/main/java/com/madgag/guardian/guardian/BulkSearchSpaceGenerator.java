@@ -13,46 +13,31 @@ import com.google.inject.Inject;
 import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
-import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
-import com.madgag.guardian.guardian.spom.detection.ValidArticleFilter;
 
 public class BulkSearchSpaceGenerator {
-	private static final Logger log = Logger.getLogger(BulkSearchSpaceGenerator.class.getName());
+	private static final Logger log = Logger
+			.getLogger(BulkSearchSpaceGenerator.class.getName());
 
 	private final SearchRequest articleSearch;
-	private final CachingNormalisedArticleProvider cachingNormalisedArticleProvider;
-	private final ValidArticleFilter validArticleFilter;
 
 	@Inject
-	public BulkSearchSpaceGenerator(PopulatedArticleSearchRequestProvider articleSearchRequestProvider,
-			CachingNormalisedArticleProvider cachingNormalisedArticleProvider,
-			ValidArticleFilter validArticleFilter) {
-		articleSearch=articleSearchRequestProvider.articleSearch();
-		this.cachingNormalisedArticleProvider = cachingNormalisedArticleProvider;
-		this.validArticleFilter = validArticleFilter;
+	public BulkSearchSpaceGenerator(PopulatedArticleSearchRequestProvider articleSearchRequestProvider) {
+		articleSearch = articleSearchRequestProvider.nakedArticleSearch();
 	}
-	
+
 	public SearchSpace getSearchSpaceCovering(Interval interval) {
-		log.info("Searching "+interval);
+		log.info("Searching " + interval);
 		Period bufferPeriod = days(2);
-		SearchResponse boo = articleSearch
-						.from(interval.getStart().minus(bufferPeriod))
-						.to(interval.getEnd())
-						.pageSize(50)
-						.execute();
-		List<NormalisedArticle> articlesToCheck = newArrayList();
+		SearchResponse boo = articleSearch.from(
+				interval.getStart().minus(bufferPeriod)).to(interval.getEnd())
+				.pageSize(50).execute();
+		List<String> articlesToCheck = newArrayList();
 		ArticleChronology articleChronology = new ArticleChronology();
 		while (boo != null) {
 			for (Content content : boo.contents) {
-				NormalisedArticle na = new ContentNormaliserTransform().apply(content);
-				if (na != null) {
-					cachingNormalisedArticleProvider.store(na);
-					if (validArticleFilter.apply(na)) {
-						articleChronology.recordPublicationDateOf(na);
-						if (interval.contains(content.webPublicationDate)) {
-							articlesToCheck.add(na);
-						}
-					}
+				articleChronology.recordPublicationDateOf(content);
+				if (interval.contains(content.webPublicationDate)) {
+					articlesToCheck.add(content.getId());
 				}
 			}
 			boo = boo.next();

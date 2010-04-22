@@ -15,41 +15,29 @@ import org.joda.time.Period;
 import com.google.inject.Inject;
 import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
-import com.madgag.guardian.guardian.spom.detection.NormalisedArticle;
-import com.madgag.guardian.guardian.spom.detection.ValidArticleFilter;
 
 public class IncrementalBulkSearchProcessor {
 
 	private final PopulatedArticleSearchRequestProvider articleSearchRequestProvider;
 	private final CachingNormalisedArticleProvider cachingNormalisedArticleProvider;
-	private final ValidArticleFilter validArticleFilter;
 
 	@Inject
 	public IncrementalBulkSearchProcessor(
 			PopulatedArticleSearchRequestProvider articleSearchRequestProvider,
-			CachingNormalisedArticleProvider cachingNormalisedArticleProvider,
-			ValidArticleFilter validArticleFilter) {
+			CachingNormalisedArticleProvider cachingNormalisedArticleProvider) {
 		this.articleSearchRequestProvider = articleSearchRequestProvider;
 		this.cachingNormalisedArticleProvider = cachingNormalisedArticleProvider;
-		this.validArticleFilter = validArticleFilter;
 	}
 
 	void process(Content content, Interval targetArticleInterval, ArticleChronology articleChronology) {
-		NormalisedArticle na = new ContentNormaliserTransform().apply(content);
-		if (na != null) {
-			cachingNormalisedArticleProvider.store(na);
-			if (validArticleFilter.apply(na)) {
-				articleChronology.recordPublicationDateOf(na);
-				if (targetArticleInterval.contains(na.getWebPublicationDate())) {
-					deferSpomSearchFor(na, articleChronology);
-				}
-			}
+		articleChronology.recordPublicationDateOf(content);
+		if (targetArticleInterval.contains(content.webPublicationDate)) {
+			deferSpomSearchFor(content, articleChronology);
 		}
 	}
 
-	private void deferSpomSearchFor(NormalisedArticle na,
-			ArticleChronology articleChronology) {
-		DateTime webPubDate = na.getWebPublicationDate();
+	private void deferSpomSearchFor(Content na,	ArticleChronology articleChronology) {
+		DateTime webPubDate = na.webPublicationDate;
 		Interval interval = new Interval(webPubDate.minus(days(2)), webPubDate);
 		Set<String> spomCandidates = articleChronology.contentIdsFor(interval);
 		for (List<String> chunkIds : partition(newArrayList(spomCandidates), 50)) {						
@@ -60,7 +48,7 @@ public class IncrementalBulkSearchProcessor {
 	public SearchRequest createSearchRequestFor(Interval targetArticleInterval) {
 		Period bufferPeriod = days(2);
 
-		return articleSearchRequestProvider.articleSearch().from(
+		return articleSearchRequestProvider.nakedArticleSearch().from(
 				targetArticleInterval.getStart().minus(bufferPeriod)).to(
 				targetArticleInterval.getEnd()).pageSize(50);
 	}

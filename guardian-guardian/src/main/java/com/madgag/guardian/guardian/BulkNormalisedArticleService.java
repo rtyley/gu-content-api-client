@@ -1,4 +1,4 @@
-package com.madgag.guardian.contentapi;
+package com.madgag.guardian.guardian;
 
 import java.util.List;
 

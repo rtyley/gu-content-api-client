@@ -21,6 +21,8 @@ public class SpomMatchScorer {
 	private static final Logger log = Logger.getLogger(SpomMatchScorer.class.getName());
 	
 	private final LevenshteinWithDistanceThreshold levenshteinWithDistanceThreshold;
+	
+	private final ValidArticleFilter validArticleFilter;
 
 	/*
 	 * This is equivalent to saying that an article with differing contributors
@@ -30,14 +32,20 @@ public class SpomMatchScorer {
 
 	@Inject
 	public SpomMatchScorer(
-			LevenshteinWithDistanceThreshold levenshteinWithDistanceThreshold) {
+			LevenshteinWithDistanceThreshold levenshteinWithDistanceThreshold,
+			ValidArticleFilter validArticleFilter) {
 		this.levenshteinWithDistanceThreshold = levenshteinWithDistanceThreshold;
+		this.validArticleFilter = validArticleFilter;
 	}
 
 	public MatchScore getMatchScore(NormalisedArticle preferredMaster,
 			NormalisedArticle possibleSpom, float minimumSuccessfulScore) {
 		if (log.isLoggable(FINE)) {
 			log.fine("Comparing "+preferredMaster.getId()+" & "+possibleSpom.getId());
+		}
+		
+		if (!validArticleFilter.apply(possibleSpom)) {
+			return null;
 		}
 		
 		

@@ -1,8 +1,12 @@
 package com.madgag.guardian.guardian.spom.detection;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.madgag.guardian.guardian.NormalisedArticleProvider;
@@ -11,12 +15,14 @@ import com.madgag.text.util.LevenshteinWithDistanceThreshold;
 @RunWith(MockitoJUnitRunner.class)
 public class SpomMatchScorerTest {
 	@Mock LevenshteinWithDistanceThreshold levenshteinWithDistanceThreshold;
+	@Mock ValidArticleFilter validArticleFilter;
 	
 	private SpomMatchScorer spomMatchScorer;
 
 	@Before
 	public void setUp() {
-		spomMatchScorer = new SpomMatchScorer(levenshteinWithDistanceThreshold);
+		when(validArticleFilter.apply(any(NormalisedArticle.class))).thenReturn(true);
+		spomMatchScorer = new SpomMatchScorer(levenshteinWithDistanceThreshold,validArticleFilter);
 	}
 	
 //	@Test

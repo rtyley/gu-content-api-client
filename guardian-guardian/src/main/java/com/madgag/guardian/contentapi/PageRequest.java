@@ -13,7 +13,7 @@ public class PageRequest extends ApiRequest<PageRequest,PageResponse> implements
 	Map<String,String> moo=newHashMap();
 	private final String id;
 
-	public PageRequest(String id, HitterThinko hitter) {
+	public PageRequest(String id, UrlHitter hitter) {
 		super(hitter);
 		this.id = id;
 	}

@@ -15,7 +15,12 @@ public class PopulatedArticleSearchRequestProvider {
 		this.apiClient = apiClient;
 	}
 	
-	public SearchRequest articleSearch() {
+	
+	public SearchRequest nakedArticleSearch() {
+		return apiClient.search().withTags("type/article").orderBy("oldest");
+	}
+	
+	public SearchRequest populatedArticleSearch() {
 		return showRequiredData(apiClient.search()).withTags("type/article").orderBy("oldest");
 	}
 	

@@ -5,10 +5,10 @@ import com.google.inject.Inject;
 
 public class ContentApiClient {
 
-	private final HitterThinko hitter;
+	private final UrlHitter hitter;
 	
 	@Inject
-	public ContentApiClient(HitterThinko hitter) {
+	public ContentApiClient(UrlHitter hitter) {
 		this.hitter = hitter;
 	}
 	

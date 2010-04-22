@@ -26,12 +26,12 @@ public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> impl
 	
 	private final ImmutableMap<String,String> params;
 	
-	public SearchRequest(HitterThinko hitter) {
+	public SearchRequest(UrlHitter hitter) {
 		super(hitter);
 		params = ImmutableMap.of();
 	}
 	
-	public SearchRequest(HitterThinko hitter, ImmutableMap<String,String> params) {
+	public SearchRequest(UrlHitter hitter, ImmutableMap<String,String> params) {
 		super(hitter);
 		this.params = params;
 	}

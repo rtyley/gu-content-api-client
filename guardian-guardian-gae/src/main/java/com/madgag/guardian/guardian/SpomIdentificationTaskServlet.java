@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.madgag.guardian.guardian.spom.detection.SpomIdentifier;
-import com.madgag.guardian.guardian.spom.detection.SpomReport;
 
 @SuppressWarnings("serial")
 @Singleton
@@ -32,9 +31,9 @@ public class SpomIdentificationTaskServlet extends HttpServlet {
 		String targetId=req.getParameter("targetId");
 		List<String> possibleSpomIds= asList(req.getParameter("possibleSpomIds").split(","));
 		
-		SpomReport spomReport = spomIdentifier.identifySpomsFor(targetId, possibleSpomIds);
-		resp.getWriter().write(spomReport.toString());
-		
+//		SpomReport spomReport = spomIdentifier.identifySpomsFor(targetId, possibleSpomIds);
+//		resp.getWriter().write(spomReport.toString());
+//		
 	}
 
 }

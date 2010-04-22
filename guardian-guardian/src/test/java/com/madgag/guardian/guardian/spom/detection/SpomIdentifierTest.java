@@ -44,7 +44,7 @@ public class SpomIdentifierTest {
 		someOtherMonkey = new NormalisedArticle("someOtherMonkey",null,null, "", null, null);
 		anArticleWhichLooksVeryLikeTheMaster = new NormalisedArticle("anArticleWhichLooksVeryLikeTheMaster",null,null, "", null, null);
 		articleProvider=new StubArticleProvider(someMonkey,someOtherMonkey,anArticleWhichLooksVeryLikeTheMaster);
-		spomIdentifier = new SpomIdentifier(spomMatchScorer, spomDetectionReporter);
+		spomIdentifier = new SpomIdentifier(spomMatchScorer, null, spomDetectionReporter);
 
 		when(spomMatchScorer.getThresholdFor(any(NormalisedArticle.class))).thenReturn(0.1f);
 		when(spomMatchScorer.getMatchScore(eq(preferredMaster),eq(someMonkey), anyInt())).thenReturn(null);
@@ -114,10 +114,8 @@ public class SpomIdentifierTest {
 		return getSpomFor(canonicalArticle, spomArticle);
 	}
 
-	private SpomReport getSpomFor(NormalisedArticle preferredMaster,	NormalisedArticle somePossibleSpom) {
-		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,spomDetectionReporter);
-		return spomIdentifier.identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom));
+	private SpomReport getSpomFor(NormalisedArticle preferredMaster, NormalisedArticle somePossibleSpom) {
+		return createRealSpomIdentifier().identifySpomsFor(preferredMaster, newHashSet(somePossibleSpom));
 	}
 	
 	
@@ -166,9 +164,9 @@ public class SpomIdentifierTest {
 	}
 
 	private SpomIdentifier createRealSpomIdentifier() {
-		SpomMatchScorer realSpomScorer = new SpomMatchScorer(new LevenshteinWithDistanceThreshold());
-		SpomIdentifier spomIdentifier = new SpomIdentifier(realSpomScorer,spomDetectionReporter);
-		return spomIdentifier;
+		LevenshteinWithDistanceThreshold levenshteinWithDistanceThreshold = new LevenshteinWithDistanceThreshold();
+		SpomMatchScorer realSpomScorer = new SpomMatchScorer(levenshteinWithDistanceThreshold,new ValidArticleFilter(levenshteinWithDistanceThreshold));
+		return new SpomIdentifier(realSpomScorer,null,spomDetectionReporter);
 	}
 
 
