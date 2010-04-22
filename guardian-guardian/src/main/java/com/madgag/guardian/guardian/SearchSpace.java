@@ -1,9 +1,12 @@
 package com.madgag.guardian.guardian;
 
+import static org.joda.time.Duration.standardHours;
+
 import java.util.List;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
@@ -25,6 +28,6 @@ public class SearchSpace {
 	
 	Set<String> possibleSpomIdsFor(String preferredMasterId) {
 		DateTime articleDate = articleChronology.publicationDateOf(preferredMasterId);
-		return articleChronology.contentIdsFor(new Interval(articleDate.minus(bufferPeriod), articleDate));
+		return articleChronology.contentIdsFor(new Interval(articleDate.minus(bufferPeriod), articleDate.plus(standardHours(2))));
 	}
 }
