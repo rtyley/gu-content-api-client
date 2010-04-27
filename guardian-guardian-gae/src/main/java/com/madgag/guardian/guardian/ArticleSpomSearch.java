@@ -2,14 +2,11 @@ package com.madgag.guardian.guardian;
 
 import static com.google.common.collect.Sets.newHashSet;
 
-import java.io.IOException;
 import java.util.Collection;
 
-import javax.servlet.ServletException;
-
 import com.google.inject.Injector;
+import com.madgag.appengine.taskqueue.Deferrable;
 import com.madgag.guardian.guardian.spom.detection.SpomIdentifier;
-import com.newatlanta.appengine.taskqueue.Deferred.Deferrable;
 
 public class ArticleSpomSearch implements Deferrable {
 
@@ -24,7 +21,7 @@ public class ArticleSpomSearch implements Deferrable {
 	}
 	
 	@Override
-	public void doTask() throws ServletException, IOException {
+	public void run() {
 		Injector injector = MyGuiceServletContextListener.INJECTOR;
 		SpomIdentifier spomIdentifer = injector.getInstance(SpomIdentifier.class);
 		spomIdentifer.identifySpomsFor(preferredMasterId, listOfPossibleSpomIds);

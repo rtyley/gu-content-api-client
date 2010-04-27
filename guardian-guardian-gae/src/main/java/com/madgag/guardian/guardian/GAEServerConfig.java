@@ -8,10 +8,14 @@ import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheManager;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
+import com.madgag.appengine.taskqueue.Deferrer;
+import com.madgag.appengine.taskqueue.TaskQueueDeferrer;
 import com.madgag.guardian.guardian.spom.detection.reporting.SpomDetectionReporter;
 import com.madgag.guardian.guardian.spom.detection.reporting.TwitterReporter;
 
@@ -20,6 +24,8 @@ public class GAEServerConfig extends AbstractModule {
 	@Override
 	protected void configure() {
 		//binder().bind(Cache.class).toProvider(FunkyCacheProvider.class).asEagerSingleton();
+		binder().bind(Deferrer.class).to(TaskQueueDeferrer.class).asEagerSingleton();
+		
 		Multibinder<SpomDetectionReporter> reporterBinder = newSetBinder(binder(), SpomDetectionReporter.class);
 		reporterBinder.addBinding().to(TwitterReporter.class);
 	}
@@ -28,5 +34,11 @@ public class GAEServerConfig extends AbstractModule {
 	@Provides
 	public Cache provideCache() throws CacheException {
 		return CacheManager.getInstance().getCacheFactory().createCache(Collections.emptyMap());
+	}
+	
+	@Singleton
+	@Provides
+	public DatastoreService provideDatastoreService() {
+		return DatastoreServiceFactory.getDatastoreService();
 	}
 }

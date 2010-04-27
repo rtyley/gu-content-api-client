@@ -2,7 +2,6 @@ package com.madgag.guardian.guardian;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
-import static com.newatlanta.appengine.taskqueue.Deferred.defer;
 import static org.joda.time.Duration.standardHours;
 import static org.joda.time.Period.days;
 
@@ -10,21 +9,25 @@ import java.util.List;
 import java.util.Set;
 
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
+import com.google.appengine.api.labs.taskqueue.TaskHandle;
 import com.google.inject.Inject;
+import com.madgag.appengine.taskqueue.Deferrer;
 import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 
 public class IncrementalBulkSearchProcessor {
 
 	private final PopulatedArticleSearchRequestProvider articleSearchRequestProvider;
+	private final Deferrer<TaskHandle> deferrer;
 
 	@Inject
 	public IncrementalBulkSearchProcessor(
+			Deferrer<TaskHandle> deferrer,
 			PopulatedArticleSearchRequestProvider articleSearchRequestProvider) {
+		this.deferrer = deferrer;
 		this.articleSearchRequestProvider = articleSearchRequestProvider;
 	}
 
@@ -40,7 +43,7 @@ public class IncrementalBulkSearchProcessor {
 		Interval interval = new Interval(webPubDate.minus(days(2)), webPubDate);
 		Set<String> spomCandidates = articleChronology.contentIdsFor(interval);
 		for (List<String> chunkIds : partition(newArrayList(spomCandidates), 50)) {						
-			defer(new ArticleSpomSearch(na.getId(), chunkIds),"deferredArticleSpomSearch");
+			deferrer.defer(new ArticleSpomSearch(na.getId(), chunkIds),"deferredArticleSpomSearch");
 		}
 	}
 

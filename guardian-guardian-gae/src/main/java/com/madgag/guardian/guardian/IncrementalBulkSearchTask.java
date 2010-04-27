@@ -2,20 +2,17 @@ package com.madgag.guardian.guardian;
 
 import static com.madgag.guardian.guardian.MyGuiceServletContextListener.INJECTOR;
 import static com.madgag.guardian.guardian.PageProcessingProgress.noContentYetProcessedForPage;
-import static com.newatlanta.appengine.taskqueue.Deferred.defer;
 
-import java.io.IOException;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
 
 import org.joda.time.Interval;
 
 import com.google.apphosting.api.DeadlineExceededException;
+import com.madgag.appengine.taskqueue.Deferrable;
+import com.madgag.appengine.taskqueue.Deferrer;
 import com.madgag.guardian.contentapi.jaxb.Content;
 import com.madgag.guardian.contentapi.jaxb.SearchResponse;
 import com.madgag.guardian.guardian.spom.detection.reporting.TwitterReporter;
-import com.newatlanta.appengine.taskqueue.Deferred.Deferrable;
 
 public class IncrementalBulkSearchTask implements Deferrable {
 	private static final Logger log = Logger.getLogger(TwitterReporter.class.getName());
@@ -41,7 +38,7 @@ public class IncrementalBulkSearchTask implements Deferrable {
 	}
 
 	@Override
-	public void doTask() throws ServletException, IOException {
+	public void run() {
 		try {
 			processAsMuchAsPossible();
 		} catch (DeadlineExceededException e) {
@@ -50,7 +47,7 @@ public class IncrementalBulkSearchTask implements Deferrable {
 	}
 
 	private void deferForABrighterTomorrow() {
-		defer(new IncrementalBulkSearchTask(targetArticleInterval,pageProcessingProgress,articleChronology));
+		INJECTOR.getInstance(Deferrer.class).defer(new IncrementalBulkSearchTask(targetArticleInterval,pageProcessingProgress,articleChronology));
 	}
 
 	private void processAsMuchAsPossible() {
