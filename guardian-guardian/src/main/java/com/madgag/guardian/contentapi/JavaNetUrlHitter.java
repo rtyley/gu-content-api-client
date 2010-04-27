@@ -22,7 +22,7 @@ public class JavaNetUrlHitter implements UrlHitter {
 		URI uri = apiRequest.toUri();
 		try {
 			URL url = uri.toURL();
-			log.info(url.toString());
+			log.fine(url.toString());
 			Resp response = (Resp) apiRequest.getJaxbContextForResponse().createUnmarshaller().unmarshal(url.openStream());
 			response.setOriginalRequest(apiRequest);
 			return response;

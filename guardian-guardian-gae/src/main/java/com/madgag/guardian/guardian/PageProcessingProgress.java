@@ -31,4 +31,9 @@ public class PageProcessingProgress implements Serializable {
 	public int getPage() {
 		return page;
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName()+"[page="+page+"]";
+	}
 }

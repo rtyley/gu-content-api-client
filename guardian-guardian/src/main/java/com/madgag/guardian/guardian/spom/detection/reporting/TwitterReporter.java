@@ -19,7 +19,7 @@ import com.rosaloves.net.shorturl.bitly.Bitly;
 
 public class TwitterReporter implements SpomDetectionReporter {
 
-	private static final Logger log = Logger.getLogger(SpomDetectionReporter.class.getName());
+	private static final Logger log = Logger.getLogger(TwitterReporter.class.getName());
 
 	private final Twitter twitter;
 	private final DiffUrlGenerator diffUrlGenerator = new DiffUrlGenerator();

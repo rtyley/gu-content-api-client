@@ -3,12 +3,14 @@ package com.madgag.guardian.guardian;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.partition;
 import static com.newatlanta.appengine.taskqueue.Deferred.defer;
+import static org.joda.time.Duration.standardHours;
 import static org.joda.time.Period.days;
 
 import java.util.List;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
@@ -19,14 +21,11 @@ import com.madgag.guardian.contentapi.jaxb.Content;
 public class IncrementalBulkSearchProcessor {
 
 	private final PopulatedArticleSearchRequestProvider articleSearchRequestProvider;
-	private final CachingNormalisedArticleProvider cachingNormalisedArticleProvider;
 
 	@Inject
 	public IncrementalBulkSearchProcessor(
-			PopulatedArticleSearchRequestProvider articleSearchRequestProvider,
-			CachingNormalisedArticleProvider cachingNormalisedArticleProvider) {
+			PopulatedArticleSearchRequestProvider articleSearchRequestProvider) {
 		this.articleSearchRequestProvider = articleSearchRequestProvider;
-		this.cachingNormalisedArticleProvider = cachingNormalisedArticleProvider;
 	}
 
 	void process(Content content, Interval targetArticleInterval, ArticleChronology articleChronology) {
@@ -50,7 +49,7 @@ public class IncrementalBulkSearchProcessor {
 
 		return articleSearchRequestProvider.nakedArticleSearch().from(
 				targetArticleInterval.getStart().minus(bufferPeriod)).to(
-				targetArticleInterval.getEnd()).pageSize(50);
+				targetArticleInterval.getEnd().plus(standardHours(2))).pageSize(50);
 	}
 
 }

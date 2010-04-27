@@ -37,7 +37,7 @@ public class SpomIdentifier {
 	
 	public SpomReport identifySpomsFor(NormalisedArticle preferredMaster, Iterable<NormalisedArticle> possibleSpoms) {
 		float thresholdScore = spomMatchScorer.getThresholdFor(preferredMaster);
-		log.info("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+thresholdScore);
+		log.fine("Processing masterArticle="+preferredMaster+" text len="+preferredMaster.getNormalisedBodyText().length()+" threshold="+thresholdScore);
 		
 		int numPossibleSpomsChecked=0;
 		List<SpomMatch> detectedSpoms=newArrayList();
@@ -52,7 +52,7 @@ public class SpomIdentifier {
 			}
 		}
 		SpomReport spomReport = new SpomReport(preferredMaster,detectedSpoms);
-		log.info("Processing masterArticle="+preferredMaster+" - numPossibleSpomsChecked: "+numPossibleSpomsChecked+" report:"+spomReport);
+		log.fine("Processing masterArticle="+preferredMaster+" - numPossibleSpomsChecked: "+numPossibleSpomsChecked+" report:"+spomReport);
 		spomDetectionReporter.report(spomReport);
 		return spomReport;
 	}
