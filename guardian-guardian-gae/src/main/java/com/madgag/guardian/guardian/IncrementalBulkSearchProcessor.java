@@ -15,6 +15,7 @@ import org.joda.time.Period;
 import com.google.appengine.api.labs.taskqueue.TaskHandle;
 import com.google.inject.Inject;
 import com.madgag.appengine.taskqueue.Deferrer;
+import com.madgag.appengine.taskqueue.TaskQueueDeferrer;
 import com.madgag.guardian.contentapi.SearchRequest;
 import com.madgag.guardian.contentapi.jaxb.Content;
 
@@ -25,7 +26,7 @@ public class IncrementalBulkSearchProcessor {
 
 	@Inject
 	public IncrementalBulkSearchProcessor(
-			Deferrer<TaskHandle> deferrer,
+			TaskQueueDeferrer deferrer,
 			PopulatedArticleSearchRequestProvider articleSearchRequestProvider) {
 		this.deferrer = deferrer;
 		this.articleSearchRequestProvider = articleSearchRequestProvider;
