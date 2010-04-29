@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.common.base.Function;
+import com.google.inject.Inject;
 import com.madgag.guardian.contentapi.jaxb.Content;
 
 public class ArticleChronologyStore {
@@ -18,6 +19,7 @@ public class ArticleChronologyStore {
 	private final static String WEB_PUB_DATE = "web-publication-date";
 	private final DatastoreService datastoreService;
 	
+	@Inject
 	public ArticleChronologyStore(DatastoreService datastoreService) {
 		this.datastoreService = datastoreService;
 	}

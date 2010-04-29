@@ -19,22 +19,19 @@ public class IncrementalBulkSearchTask implements Deferrable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private final ArticleChronology articleChronology;
 	private final Interval targetArticleInterval;
 	
 	private PageProcessingProgress pageProcessingProgress;
 
 	IncrementalBulkSearchTask(
 			Interval targetArticleInterval,
-			PageProcessingProgress pageProcessingProgress,
-			ArticleChronology articleChronology) {
-		this.articleChronology = articleChronology;
+			PageProcessingProgress pageProcessingProgress) {
 		this.targetArticleInterval = targetArticleInterval;
 		this.pageProcessingProgress = pageProcessingProgress;
 	}
 
 	public IncrementalBulkSearchTask(Interval targetArticleInterval) {
-		this(targetArticleInterval,noContentYetProcessedForPage(1),new ArticleChronology());
+		this(targetArticleInterval,noContentYetProcessedForPage(1));
 	}
 
 	@Override
@@ -47,19 +44,23 @@ public class IncrementalBulkSearchTask implements Deferrable {
 	}
 
 	private void deferForABrighterTomorrow() {
-		INJECTOR.getInstance(Deferrer.class).defer(new IncrementalBulkSearchTask(targetArticleInterval,pageProcessingProgress,articleChronology));
+		INJECTOR.getInstance(Deferrer.class).defer(new IncrementalBulkSearchTask(targetArticleInterval,pageProcessingProgress));
 	}
 
 	private void processAsMuchAsPossible() {
 		IncrementalBulkSearchProcessor processor = INJECTOR.getInstance(IncrementalBulkSearchProcessor.class);
+		ArticleChronologyStore store = INJECTOR.getInstance(ArticleChronologyStore.class);
 		SearchResponse searchResultsPage = processor.createSearchRequestFor(targetArticleInterval).page(pageProcessingProgress.getPage()).execute();
 		for (int batchNum=0; batchNum<2; ++batchNum) {
 			log.info("Processing page "+searchResultsPage.currentPage+" out of "+searchResultsPage.pages+" for "+targetArticleInterval);
-			for (Content content : searchResultsPage.contents) {
-				if (pageProcessingProgress.hasNotYetProcessed(content.id)) {
-					processor.process(content,targetArticleInterval,articleChronology);
-					pageProcessingProgress = pageProcessingProgress.updatedWith(content.id);
-				}
+			
+			Iterable<Content> contentNotYetProcessed = pageProcessingProgress.contentNotYetProcessedFrom(searchResultsPage.contents);
+			store.storeChronologyFrom(contentNotYetProcessed);
+			log.info("Stored chrono from page "+searchResultsPage.currentPage);
+			
+			for (Content content : contentNotYetProcessed) {
+				processor.process(content,targetArticleInterval);
+				pageProcessingProgress = pageProcessingProgress.updatedWith(content.id);
 			}
 			pageProcessingProgress = noContentYetProcessedForPage(searchResultsPage.currentPage+1);
 			if (!searchResultsPage.hasNext()) {

@@ -3,6 +3,7 @@ package com.madgag.guardian.contentapi.jaxb;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Multimaps.index;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 
@@ -18,8 +19,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
 
 @XmlRootElement
-public class Content implements HasId {
-	
+public class Content implements HasId, Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	@XmlAttribute(name="web-title")
 	public String webTitle;
 
