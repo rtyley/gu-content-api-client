@@ -1,14 +1,8 @@
 package com.madgag.guardian.guardian;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Lists.partition;
 import static org.joda.time.Duration.standardHours;
 import static org.joda.time.Period.days;
 
-import java.util.List;
-import java.util.Set;
-
-import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
@@ -32,23 +26,13 @@ public class IncrementalBulkSearchProcessor {
 		this.articleSearchRequestProvider = articleSearchRequestProvider;
 	}
 
-	void process(Content content, Interval targetArticleInterval, ArticleChronology articleChronology) {
-		articleChronology.recordPublicationDateOf(content);
+	void process(Content content, Interval targetArticleInterval) {
 		if (targetArticleInterval.contains(content.webPublicationDate)) {
-			deferSpomSearchFor(content, articleChronology);
+			deferrer.defer(new ArticleSpomCandidateFindingTask(content),"deferredArticleSpomSearch");
 		}
 	}
 
-	private void deferSpomSearchFor(Content na,	ArticleChronology articleChronology) {
-		DateTime webPubDate = na.webPublicationDate;
-		Interval interval = new Interval(webPubDate.minus(days(2)), webPubDate);
-		Set<String> spomCandidates = articleChronology.contentIdsFor(interval);
-		for (List<String> chunkIds : partition(newArrayList(spomCandidates), 50)) {						
-			deferrer.defer(new ArticleSpomSearch(na.getId(), chunkIds),"deferredArticleSpomSearch");
-		}
-	}
-
-	public SearchRequest createSearchRequestFor(Interval targetArticleInterval) {
+	SearchRequest createSearchRequestFor(Interval targetArticleInterval) {
 		Period bufferPeriod = days(2);
 
 		return articleSearchRequestProvider.nakedArticleSearch().from(

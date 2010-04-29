@@ -1,8 +1,14 @@
 package com.madgag.guardian.guardian;
 
+import static com.google.common.collect.Iterables.filter;
+
 import java.io.Serializable;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.madgag.guardian.contentapi.jaxb.Content;
 
 public class PageProcessingProgress implements Serializable {
 
@@ -24,6 +30,12 @@ public class PageProcessingProgress implements Serializable {
 		return new PageProcessingProgress(page, ImmutableSet.<String>builder().addAll(processedContentIds).add(processedContentId).build());
 	}
 
+	public Iterable<Content> contentNotYetProcessedFrom(Iterable<Content> contentItems) {
+		return filter(contentItems, new Predicate<Content>() {
+			public boolean apply(Content input) { return processedContentIds.contains(input.getId()); }
+		});
+	}
+	
 	public boolean hasNotYetProcessed(String contentId) {
 		return !processedContentIds.contains(contentId);
 	}
