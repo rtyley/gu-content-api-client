@@ -26,6 +26,7 @@ public abstract class ApiRequest<Req extends ApiRequest<Req,Resp>, Resp extends 
 
 	public abstract JAXBContext getJaxbContextForResponse();
 	
+	@SuppressWarnings("unchecked")
 	public final Resp execute() {
 		return hitter.makeWebRequestFor((Req)this);
 	}

@@ -1,6 +1,6 @@
 package com.madgag.guardian.contentapi.jaxb;
 
-public class TagBuilder extends Tag {
+public class TagBuilder {
     Tag tag = new Tag();
 
     public TagBuilder type(String type) {
