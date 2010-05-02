@@ -6,6 +6,9 @@
     <artifactId>gu-content-api-client</artifactId>
     <name>Guardian Content Api Client Project</name>
     <packaging>jar</packaging>
+	<scm>
+		<connection>scm:git:git://github.com/rtyley/gu-content-api-client.git</connection>
+	</scm>
     <distributionManagement>
         <repository>
             <id>releases</id>
