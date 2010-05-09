@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Tag implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	@XmlAttribute
 	public String type;
 	

@@ -10,7 +10,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 
-import org.joda.time.DateTime;
+import org.joda.time.ReadableInstant;
 import org.joda.time.ReadableInterval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -48,11 +48,11 @@ public class SearchRequest extends ApiRequest<SearchRequest,SearchResponse> impl
 		return newSearchRequestWith("tag", COMMA_JOINER.join(tags));
 	}
 
-	public SearchRequest to(DateTime end) {
+	public SearchRequest to(ReadableInstant end) {
 		return newSearchRequestWith("to-date", DATE_FORMAT.print(end));
 	}
 
-	public SearchRequest from(DateTime start) {
+	public SearchRequest from(ReadableInstant start) {
 		return newSearchRequestWith("from-date", DATE_FORMAT.print(start));
 	}
 
