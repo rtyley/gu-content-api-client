@@ -4,9 +4,8 @@
 	<groupId>com.madgag</groupId>
 	<version>1.11-SNAPSHOT</version>
 	<artifactId>gu-content-api-client</artifactId>
-	<name>Guardian Content Api Client Project</name>
 	<packaging>jar</packaging>
-    <name>Quick and dirty Guardian Content Api Client Project</name>
+	<name>Guardian Content Api Client Project</name>
     <description>A Java client for the Guardian Content Api</description>
     <url>http://github.com/rtyley/madgag-util</url>
     <licenses>
