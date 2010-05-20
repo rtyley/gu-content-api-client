@@ -1,1 +1,8 @@
-A client for the Guardian Content api
+An unofficial, scrappy little Java client for the Guardian Content api (http://api.guardianapis.com/docs)
+
+Use it like this, if you please:
+
+SearchResponse response = new ContentApiClient().search().withTags("politics/general-election-2010").showFields("short-url").execute();
+for (Content content : response.contents) {
+    System.out.println("Article url "+content.getField("short-url"));
+}
