@@ -9,7 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-public class BooBoo extends XmlAdapter<String, DateTime> {
+public class DateTimeAdapter extends XmlAdapter<String, DateTime> {
 	private static DateTimeFormatter ISO_FORMAT = ISODateTimeFormat.dateTimeNoMillis();
 
 	@Override

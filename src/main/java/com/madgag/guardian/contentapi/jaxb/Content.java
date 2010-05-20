@@ -49,7 +49,7 @@ public class Content implements HasId, Serializable {
 	@XmlElement(name="field")
 	public List<Field> fields=newArrayList();
 
-	@XmlJavaTypeAdapter(BooBoo.class) // watch out for silent failures of adaptor marshalling...
+	@XmlJavaTypeAdapter(DateTimeAdapter.class) // watch out for silent failures of adaptor marshalling...
 	@XmlAttribute(name="web-publication-date", required=true)
 	public DateTime webPublicationDate;
 

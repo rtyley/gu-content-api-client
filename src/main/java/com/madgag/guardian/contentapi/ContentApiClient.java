@@ -6,7 +6,11 @@ import com.google.inject.Inject;
 public class ContentApiClient {
 
 	private final UrlHitter hitter;
-	
+
+    public ContentApiClient() {
+        this(new JavaNetUrlHitter(new ApiConfig("http://content.guardianapis.com/")));
+    }
+
 	@Inject
 	public ContentApiClient(UrlHitter hitter) {
 		this.hitter = hitter;

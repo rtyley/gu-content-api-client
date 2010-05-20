@@ -17,8 +17,8 @@ public class JavaNetUrlHitter implements UrlHitter {
 	private final ApiConfig apiConfig;
 
 	@Inject
-	public JavaNetUrlHitter(ApiConfig urlGenerator) {
-		this.apiConfig = urlGenerator;
+	public JavaNetUrlHitter(ApiConfig apiConfig) {
+		this.apiConfig = apiConfig;
 	}
 
 	@SuppressWarnings("unchecked")
